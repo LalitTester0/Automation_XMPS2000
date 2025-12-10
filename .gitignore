@@ -1,0 +1,106 @@
+# --------------------------
+# Python standard ignores
+# --------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyd
+*.pdb
+*.tmp
+*.log
+*.sqlite3
+*.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+MANIFEST
+
+# --------------------------
+# Pytest & Coverage
+# --------------------------
+.pytest_cache/
+.cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Reports
+report.html
+reports/
+*.html
+
+# --------------------------
+# Editor / IDE
+# --------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# --------------------------
+# OS files
+# --------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --------------------------
+# Screenshots & images
+# --------------------------
+screenshots/
+*.png
+*.jpg
+*.jpeg
+
+# --------------------------
+# Pywinauto automation logs
+# --------------------------
+*.uia
+*.xml
+*.dmp
+
+# --------------------------
+# Temporary files
+# --------------------------
+temp/
+tmp/
+*.bak
+*.old
+
+# --------------------------
+# Test outputs
+# --------------------------
+test-output/
+output/
+results/
+
+# --------------------------
+# Environment variables 
+# --------------------------
+.env
+*.env
+
+# --------------------------
+# Config / secrets
+# --------------------------
+*.ini
+*.cfg
+*.yaml
+*.yml
+
+# --------------------------
+# Local Windows executables (if accidentally placed)
+# --------------------------
+*.exe
+*.dll
+*.msi

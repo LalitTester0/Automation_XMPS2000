@@ -3,14 +3,60 @@ import time
 from pywinauto import Desktop
 from pywinauto.keyboard import send_keys
 from config import TIMEOUT_MED
+from pywinauto.timings import always_wait_until, TimeoutError
 
 
 class ProjectWindow:
-    """The window that contains the tree view and the data-grid."""
+    @property
+    def tree(self):
+        return self.win.child_window(control_type="Tree")
+    @property
+    def grid(self):
+        return self.win.child_window(auto_id="grdMain", control_type="Table")
+    @property
+    def user_defined_tags_node(self):
+        return self.tree.child_window(title="User Defined Tags", control_type="TreeItem")
+    @property
+    def tags_node(self):
+        return self.tree.child_window(title="Tags", control_type="TreeItem")
+    @property
+    def system_tags_node(self):
+        return self.tree.child_window(title="System Tags", control_type="TreeItem")
+    @property
+    def system_config_node(self):
+        return self.tree.child_window(title="System Configuration", control_type="TreeItem")
+    @property
+    def modbus_tcp_client_node(self):
+        return self.tree.child_window(title="MODBUS TCP Client", control_type="TreeItem")
+    @property
+    def ethernate_node(self):
+        return self.tree.child_window(title="Ethernet", control_type="TreeItem")
+    @property
+    def variable_dropdown(self):
+        return self.win.child_window(auto_id="TagEnable", control_type="ComboBox")
+
+
+
+    def click_system_config(self):
+        self.system_config_node.double_click_input()
+
+    def click_ethernet_node(self):
+        self.click_system_config()        
+        self.ethernate_node.double_click_input()
+
+    def click_modbus_tcp_client(self):
+        self.click_ethernet_node()
+        self.modbus_tcp_client_node.click_input()
+        self.modbus_tcp_client_node.right_click_input()
+        time.sleep(0.5)
+        send_keys("{DOWN}{ENTER}")  
+        time.sleep(2)
+        self.variable_dropdown.click_input()
+        time.sleep(2)
+        
 
     def __init__(self, app):
         self.app = app
-        # find the first top-level window that owns a Tree control
         windows = Desktop(backend="uia").windows(process=app.process)
         self.win = next(
             (Desktop(backend="uia").window(handle=w.handle)
@@ -21,7 +67,6 @@ class ProjectWindow:
         )
         if not self.win:
             raise RuntimeError("Project window not found")
-        #self.win.wait("visible", timeout=TIMEOUT_MED)
 
     def _find_window(self):
         """Find the top-level window that contains a Tree control"""
@@ -36,7 +81,6 @@ class ProjectWindow:
             print(f"Error finding window: {e}")
         return None
 
-    
     def wait_for_visible(self, timeout=TIMEOUT_MED):
         win = self._find_window()
         if not win:
@@ -45,35 +89,76 @@ class ProjectWindow:
         self.win = win
         return self.win
 
-    @property
-    def tree(self):
-        return self.win.child_window(control_type="Tree")
-
-    @property
-    def grid(self):
-        return self.win.child_window(auto_id="grdMain", control_type="Table")
-
-    # ------------------------------------------------------------------
-    # Navigation helpers
-    # ------------------------------------------------------------------
     def _expand_tags(self):
-        tags = self.tree.child_window(title="Tags", control_type="TreeItem")
-        tags.double_click_input()
+        self.tags_node.double_click_input()
         time.sleep(0.3)
+
+    def click_user_defined_tags(self):
+        self.user_defined_tags_node.click_input()
+        self.user_defined_tags_node.right_click_input()
+        time.sleep(0.5)
+        send_keys("{DOWN}{ENTER}")  
+        time.sleep(1)
 
     def open_add_user_tag_dialog(self):
         self._expand_tags()
-        udt = self.tree.child_window(title="User Defined Tags", control_type="TreeItem")
-        udt.click_input()
-        udt.right_click_input()
-        time.sleep(0.5)
-        send_keys("{DOWN}{ENTER}")      # choose “Add” from context menu
-        time.sleep(1)
-
-    # ------------------------------------------------------------------
-    # Grid verification
-    # ------------------------------------------------------------------
+        self.click_user_defined_tags()
+       
     def assert_row_count(self, expected: int):
         self.grid.wait("visible", timeout=TIMEOUT_MED)
         actual = self.grid.item_count()
         assert actual == expected, f"Expected {expected} rows, got {actual}"
+
+    def click_system_tags(self):
+        self._expand_tags()
+        self.system_tags_node.click_input()
+
+    def get_system_tags_gridrow_count(self):
+        row_count = self.grid.item_count()
+        print(row_count)
+        return row_count
+
+    def get_corevalue_by_row_header(self,count):
+        element = self.win.child_window(
+        title="Tag    ˅ Row 0, Not sorted.",
+        control_type="Edit"
+        ).wrapper_object()
+        value = element.get_value()
+        print(value)
+
+    def get_multivalue_by_row_header(self, count):
+        val = []
+        for i in range(count):
+            dynamic_title = f"Tag    ˅ Row {i}, Not sorted."
+            print("TITLE",dynamic_title)
+            element = self.win.child_window(
+                    title=dynamic_title,
+                    control_type="Edit"
+                ).wrapper_object()
+
+            value = element.get_value()
+            val.append(value)
+        print(val)
+
+            
+# pages/project_window.py  (add this method)
+
+    def print_all_items_in_dropdown(self):
+        try:
+            dropdown_list = self.win.child_window(auto_id="1000", control_type="List")
+            dropdown_list.wait("visible", timeout=20)
+            list_wrapper = dropdown_list.wrapper_object()
+            items = list_wrapper.items()
+            print(f"Found {len(items)} items in dropdown:\n")
+            for i, item in enumerate(items, 1):
+                text = item.window_text().strip()
+                if text:
+                    print(f"  {i:2d}. {text}")
+                else:
+                    print(f"  {i:2d}. <empty>")
+
+           
+
+        except Exception as e:
+            print(f"Could not read dropdown list: {e}")
+            print("Make sure the dropdown is expanded/open!")

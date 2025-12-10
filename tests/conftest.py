@@ -8,7 +8,6 @@ from config import EXE_PATH
 from pages.main_window import MainWindow
 from pages.project_window import ProjectWindow
 
-
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
