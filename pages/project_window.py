@@ -1,6 +1,6 @@
 # pages/project_window.py
 import time
-from pywinauto import Desktop
+from pywinauto import Desktop,Application
 from pywinauto.keyboard import send_keys
 from config import TIMEOUT_MED
 from pywinauto.timings import always_wait_until, TimeoutError
@@ -53,8 +53,7 @@ class ProjectWindow:
         time.sleep(2)
         self.variable_dropdown.click_input()
         time.sleep(2)
-        
-
+    
     def __init__(self, app):
         self.app = app
         windows = Desktop(backend="uia").windows(process=app.process)
@@ -93,12 +92,46 @@ class ProjectWindow:
         self.tags_node.double_click_input()
         time.sleep(0.3)
 
-    def click_user_defined_tags(self):
+    def click_add_user_defined_tags(self):
         self.user_defined_tags_node.click_input()
         self.user_defined_tags_node.right_click_input()
         time.sleep(0.5)
         send_keys("{DOWN}{ENTER}")  
         time.sleep(1)
+
+    def click_export_user_defined_tags(self):
+        self._expand_tags()
+        self.user_defined_tags_node.click_input()
+        self.user_defined_tags_node.right_click_input()
+        time.sleep(0.5)
+        send_keys("{DOWN}")  
+        send_keys("{DOWN}{ENTER}")
+        time.sleep(1)
+        send_keys("{DOWN}{ENTER}")
+        time.sleep(1)
+        try:
+            alert_found = False
+
+            # IMPORTANT: self.app instead of undefined 'app'
+            for win in Desktop(backend="uia").windows(process=self.app.process):
+                win_spec = Desktop(backend="uia").window(handle=win.handle)
+
+                for txt in win_spec.descendants(control_type="Text"):
+                    text_value = txt.window_text()
+
+                    print("Found Text:", text_value)
+                    if r"Tags are save in C:\Users\Admin\AppData\Roaming\MessungSystems\XMPS2000\XM Projects\XBLDProject02\XBLDProject300.xmprj_UDT.csv File" in text_value:
+                        alert_found = True
+                        print("Alert found:", text_value)
+
+                        ok_button = win_spec.child_window(title="OK", control_type="Button")
+                        if ok_button.exists(timeout=2):
+                            ok_button.click_input()
+                            print("OK button clicked.")
+                        break  # Stop scanning text inside this window
+        except Exception as e:
+            print(f"Error while handling alert: {e}")   
+
 
     def open_add_user_tag_dialog(self):
         self._expand_tags()
@@ -140,9 +173,6 @@ class ProjectWindow:
             val.append(value)
         print(val)
 
-            
-# pages/project_window.py  (add this method)
-
     def print_all_items_in_dropdown(self):
         try:
             dropdown_list = self.win.child_window(auto_id="1000", control_type="List")
@@ -156,9 +186,6 @@ class ProjectWindow:
                     print(f"  {i:2d}. {text}")
                 else:
                     print(f"  {i:2d}. <empty>")
-
-           
-
         except Exception as e:
             print(f"Could not read dropdown list: {e}")
             print("Make sure the dropdown is expanded/open!")

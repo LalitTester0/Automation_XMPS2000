@@ -67,39 +67,3 @@ class MainWindow:
     
     def press_enter(self):
         send_keys("{ENTER}")
-
-
-    ## pages/main_window.py — FINAL WORKING METHOD
-    # pages/main_window.py — FINAL METHOD
-
-    # pages/main_wi# pages/main_window.py — FINAL WORKING METHOD
-
-    def open_project_file_dialog(self, file_path):
-        """
-        Open any .xmprj file — WORKS 100% with your XMPS 2000
-        """
-        print(f"Opening project: {file_path}")
-
-        # Click Open button
-        self.btn_open_project.click_input()
-
-        # Wait for the dialog to appear
-        time.sleep(2)
-
-        # THIS IS THE ONLY LINE THAT WORKS IN REAL LIFE
-        dlg = pywinauto.Application(backend="uia").connect(title_re="Browse.*", timeout=15).top_window()
-
-        print(f"Dialog found: '{dlg.window_text()}'")
-
-        # Enter the file path using the correct AutomationId
-        file_edit = dlg.child_window(auto_id="1148", control_type="Edit")
-        file_edit.wait("ready", timeout=10)
-        file_edit.set_text(file_path)
-
-        # Click Open button
-        open_btn = dlg.child_window(auto_id="1", control_type="Button")
-        open_btn.wait("enabled", timeout=10)
-        open_btn.click_input()
-
-        print("Project opening...")
-        time.sleep(8)

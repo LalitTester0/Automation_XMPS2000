@@ -10,10 +10,6 @@ import pywinauto
 import sys
 import pyperclip
 
-def hide_traceback(exctype, value, traceback):
-    print(f"Error: {value}")   # or remove print to hide fully
-
-sys.excepthook = hide_traceback
 
 @pytest.mark.dependency
 def test_add_user_defined_tag(main_page, project_page):
@@ -72,4 +68,10 @@ def test_open_project_file_via_dialog(main_page,project_page):
     title = project_page.win.window_text()
     print("Title Bar Text:", title)
 
+
+def test_export_user_defined_tag(main_page, project_page):
+    main_page.click_new_project()
+    main_page.select_model_and_confirm()
+    time.sleep(2) 
+    project_page.click_export_user_defined_tags()
     
