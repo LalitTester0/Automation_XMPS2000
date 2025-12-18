@@ -135,7 +135,7 @@ class ProjectWindow:
 
     def open_add_user_tag_dialog(self):
         self._expand_tags()
-        self.click_user_defined_tags()
+        self.click_add_user_defined_tags()
        
     def assert_row_count(self, expected: int):
         self.grid.wait("visible", timeout=TIMEOUT_MED)

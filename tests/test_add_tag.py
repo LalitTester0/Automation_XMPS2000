@@ -21,7 +21,7 @@ def test_add_user_defined_tag(main_page, project_page):
     dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
     dialog.save()
     time.sleep(1)
-    project_page.assert_row_count(expected=0)
+    project_page.assert_row_count(expected=1)
     dialog.cancel()
 
 
