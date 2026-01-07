@@ -92,7 +92,7 @@ class ProjectWindow:
         self.tags_node.double_click_input()
         time.sleep(0.3)
 
-    def click_add_user_defined_tags(self):
+    def click_user_defined_tags(self):
         self.user_defined_tags_node.click_input()
         self.user_defined_tags_node.right_click_input()
         time.sleep(0.5)
