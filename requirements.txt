@@ -1,0 +1,6 @@
+pytest
+pyautogui
+pywinauto
+pytest-html
+pillow
+pyscreeze

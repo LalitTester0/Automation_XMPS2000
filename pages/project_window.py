@@ -34,8 +34,74 @@ class ProjectWindow:
     @property
     def variable_dropdown(self):
         return self.win.child_window(auto_id="TagEnable", control_type="ComboBox")
+    @property
+    def compile_button(self):
+        return self.win.child_window(title="Compile", control_type="Button")
+    @property
+    def main_node(self):
+        return self.tree.child_window(title="Main", control_type="TreeItem")
+    
+    @property
+    def save_project_button(self):
+        return self.win.child_window(title="strpBtnSaveProejct", control_type="Button")
 
+    @property
+    def project_saved_message(self):
+        return self.win.child_window(title="Project Saved Sucessfully",control_type="Text")
+    
+    @property
+    def status_bar(self):
+        return self.win.child_window(auto_id="statusMain", control_type="StatusBar")
 
+    @property
+    def io_configuration_node(self):
+    
+        return self.tree.child_window(title="IO Configuration", control_type="TreeItem")
+    
+    @property
+    def expansion_io_node(self):
+        return self.tree.child_window(title="Expansion I/O", control_type="TreeItem")
+
+    @property
+    def add_expansion_menu(self):
+        return self.win.child_window(title="DropDown", control_type="ToolBar")
+  
+
+    @property
+    def rename_expansionname(self):
+        return self.win.child_window(title="Model Row 0, Not sorted.", control_type="Edit")
+    
+
+    @property
+    def retentive_address_row0_cell(self):
+        """Returns the 'RetentiveAddress Row 0, Not sorted.' cell in the grid (read-only)"""
+        return self.win.child_window(title="RetentiveAddress Row 0, Not sorted.", control_type="Edit")
+
+    
+    def click_rename_expansion(self):
+        self.rename_expansion.click_input()
+
+    def doubleclick_open_expansion_form(self):
+        self.rename_expansionname.double_click_input()
+
+    def click_add_device_expansion(self):
+        self.add_expansion_menu.click_input()
+
+    def right_click_expansion_io(self):
+        self.expansion_io_node.right_click_input()
+
+    def double_click_expansion(self):
+        self.expansion_io_node.double_click_input()
+    
+    def click_save_project_button(self):
+        self.save_project_button.click_input()
+
+    def click_ioconfig(self):
+        self.io_configuration_node.double_click_input()
+    
+    
+    def click_compile_button(self):
+        self.compile_button.click_input()
 
     def click_system_config(self):
         self.system_config_node.double_click_input()
@@ -68,7 +134,6 @@ class ProjectWindow:
             raise RuntimeError("Project window not found")
 
     def _find_window(self):
-        """Find the top-level window that contains a Tree control"""
         try:
             windows = Desktop(backend="uia").windows(process=self.app.process)
             for w in windows:
@@ -111,8 +176,6 @@ class ProjectWindow:
         time.sleep(1)
         try:
             alert_found = False
-
-            # IMPORTANT: self.app instead of undefined 'app'
             for win in Desktop(backend="uia").windows(process=self.app.process):
                 win_spec = Desktop(backend="uia").window(handle=win.handle)
 
@@ -128,7 +191,7 @@ class ProjectWindow:
                         if ok_button.exists(timeout=2):
                             ok_button.click_input()
                             print("OK button clicked.")
-                        break  # Stop scanning text inside this window
+                        break  
         except Exception as e:
             print(f"Error while handling alert: {e}")   
 
