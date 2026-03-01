@@ -1,6 +1,7 @@
-# tests/conftest.py
 import pytest
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pyautogui
 from datetime import datetime
 from pywinauto import Application
@@ -8,6 +9,7 @@ from config import EXE_PATH
 from pages.main_window import MainWindow
 from pages.project_window import ProjectWindow
 from pages.io_config import IOConfig
+# from pages.io_config import ResistanceLookupPage
 import ctypes
 import shutil
 # ==================== SCREENSHOT ON FAILURE + SCENARIO ====================
@@ -137,3 +139,8 @@ def project_page(app, main_page):
 @pytest.fixture
 def io_config(project_page):
     return IOConfig(project_page.win)
+
+# @pytest.fixture
+# def resistance_lookup_page(project_page):
+#     return ResistanceLookupPage(project_page.win)
+

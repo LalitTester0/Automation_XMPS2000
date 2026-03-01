@@ -10,6 +10,9 @@ EXE_PATH = r"C:\Program Files (x86)\Messung Systems\XMPS2000_Setup\XMPS2000_1.10
 DEFAULT_TAG_NAME      = "YourTagValue"
 DEFAULT_LOGICAL_ADDR  = ""          # leave empty or set a value
 
+Edited_TAG_NAME      = "Under_score"
+Number_TAG_NAME      = "Under_score"
+Edited_LOGICAL_ADDR  = ""   
 # Timeouts (seconds)
 TIMEOUT_SHORT = 5
 TIMEOUT_MED   = 10
