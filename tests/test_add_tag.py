@@ -2,6 +2,7 @@
 import time
 import pytest
 from config import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR
+from pages import io_config
 from pages.dialogs import NewProjectDialog
 from pywinauto.keyboard import send_keys
 from pathlib import Path
@@ -10,6 +11,7 @@ import pywinauto
 import sys
 import pyperclip
 from excel_report import update_excel_result
+from tests.conftest import project_page
 
 @pytest.mark.UD_tags
 @pytest.mark.dependency
@@ -41,26 +43,17 @@ def test_Zero_add_user_defined_tag(main_page, project_page):
 
 @pytest.mark.other
 def test_get_system_tags(main_page, project_page):
-    tc_id = "TC_SYS_TAG_001"
-    excel_path = r"C:\Users\admin\Desktop\XMPS_Automation\Automation_XMPS2000\Execution_Report.xlsx"
+    PLC_MODEL = "XBLD-17E"
 
-    try:
-        PLC_MODEL = "XBLD-17E"
-        main_page.click_new_project()
-        main_page.select_model_and_confirm(PLC_MODEL)
-        time.sleep(2)
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.click_system_tags()
+    count = project_page.get_system_tags_gridrow_count()
+    project_page.get_multivalue_by_row_header(10)
 
-        project_page.click_system_tags()
-        count = project_page.get_system_tags_gridrow_count()
-        project_page.get_multivalue_by_row_header(10)
+    assert count > 0, "System tags grid is empty"
 
-        assert count > 0, "System tags grid is empty"
-
-        update_excel_result(excel_path, tc_id, "PASS")
-
-    except Exception as e:
-        update_excel_result(excel_path, tc_id, "FAIL", str(e))
-        raise
+    print("Test passed: System tags grid is not empty")
 
 @pytest.mark.modbus_tcp_client
 def test_get_data(main_page, project_page):
@@ -704,7 +697,6 @@ def test_AIAO_OR(main_page, project_page, io_config):
     io_config.click_add()
     project_page.double_click_expansion()
     io_config.assert_or_tags_present(expected_count=4)
-
     print("Test passed: AIAO module shows 4 OR tags as expected!")
 
 @pytest.mark.other1
@@ -802,6 +794,30 @@ def test_UIUO_OL(main_page, project_page, io_config):
 
     print("Test passed: UIUO module shows 4 OL tags as expected!")
 
+
+@pytest.mark.expansion
+def test_verify_16_di_expansion_in_grid(main_page, project_page, io_config):
+    PLC_MODEL = "XBLD-17E"
+    EXPANSION_MODEL = "XBLD-DI16"
+    
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()    
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    io_config.assert_model_name_in_grid(EXPANSION_MODEL)
+
+    print(f"Test passed: Expansion model '{EXPANSION_MODEL}' verified in grid!")
+
+    io_config.assert_ol_tags_present(expected_count=4)
+
+    print("Test passed: UIUO module shows 4 OL tags as expected!")
+
 @pytest.mark.other2
 def test_XBLD_UIUO_OL(main_page, project_page, io_config):
     PLC_MODEL = "XBLD-17E"
@@ -821,3 +837,1564 @@ def test_XBLD_UIUO_OL(main_page, project_page, io_config):
 
     print("Test passed: UIUO module shows 0 OL tags as expected!")
 
+@pytest.mark.other3
+def test_XBLD_DI16_input_filter_checked_by_default(main_page, project_page, io_config):
+    PLC_MODEL = "XBLD-17E"
+    EXPANSION_MODEL = "XBLD-DI16"  
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the DI expansion module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()  # Opens the module settings
+
+    # Assert: Input Filter is checked by default
+    io_config.assert_input_filter_enabled_by_default()
+
+    print("Test passed: 'Enable Input Filter' is checked by default!")
+
+
+@pytest.mark.other3
+def test_XBLD_DI8_DO6_input_filter_checked_by_default(main_page, project_page, io_config):
+    PLC_MODEL = "XBLD-17E"
+    EXPANSION_MODEL = "XBLD-DI8-DO6"  
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the DI expansion module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()  # Opens the module settings
+
+    # Assert: Input Filter is checked by default
+    io_config.assert_input_filter_enabled_by_default()
+
+    print("Test passed: 'Enable Input Filter' is checked by default!")
+
+@pytest.mark.other3
+def test_XM_DI8_DO6_input_filter_checked_by_default(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-DI8-DO6T"  
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the DI expansion module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()  # Opens the module settings
+
+    # Assert: Input Filter is checked by default
+    io_config.assert_input_filter_enabled_by_default()
+
+    print("Test passed: 'Enable Input Filter' is checked by default!")
+
+@pytest.mark.other3
+def test_XM_DI16_input_filter_checked_by_default(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-DI-16"  
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the DI expansion module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()  # Opens the module settings
+
+    # Assert: Input Filter is checked by default
+    io_config.assert_input_filter_enabled_by_default()
+
+    print("Test passed: 'Enable Input Filter' is checked by default!")
+
+@pytest.mark.expansion
+def test_digital_input_filter_rejects_invalid_values(main_page, project_page, io_config):
+    PLC_MODEL = "XBLD-17E"
+    DI_MODEL = "XBLD-DI16"
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add DI module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(DI_MODEL)
+    io_config.click_add()
+
+    # Open the module form
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    # Enable Input Filter
+    io_config.enable_input_filter()
+
+    # Test invalid values
+    invalid_values = ["0", "21", "30", "-5", "abc", ""]
+    for invalid_val in invalid_values:
+        print(f"\nTesting invalid value: '{invalid_val}'")
+
+        # Enter invalid value and store it
+        entered_value = io_config.enter_input_filter_value(invalid_val)
+
+        # Save to apply changes
+        io_config.save_expansion()
+
+        # Re-open form to refresh view (if save closes it)
+        project_page.doubleclick_open_expansion_form()
+
+        # Get displayed value in DigitalFilter column
+        displayed_value = io_config.get_displayed_digital_filter_value()
+
+        # Key assertion: entered invalid value should NOT match displayed value
+        assert entered_value != displayed_value, \
+            f"Invalid value '{entered_value}' was accepted! Displayed: '{displayed_value}'"
+
+        # Additional: displayed value should be valid (1–20)
+        displayed_num = int(displayed_value)
+        assert 1 <= displayed_num <= 20, \
+            f"Displayed value '{displayed_value}' is outside valid range after invalid input"
+
+        print(f"Assertion passed: Invalid '{entered_value}' rejected → displayed '{displayed_value}'")
+
+    # Test one valid value to confirm acceptance
+    valid_val = "15"
+    entered_valid = io_config.enter_input_filter_value(valid_val)
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    displayed_valid = io_config.get_displayed_digital_filter_value()
+
+    assert entered_valid == displayed_valid, \
+        f"Valid value '{valid_val}' not accepted! Got '{displayed_valid}'"
+    print(f"Valid value '{valid_val}' correctly accepted")
+
+    print("Test passed: Digital Input Filter rejects invalid values and accepts only 1–20!")
+
+@pytest.mark.other4
+def test_XM_UIUI_Digital_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+
+    # ← Change this line to test any mode
+    selected_mode = "Digital"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other4
+def test_XM_UIUI_0_10V_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+
+    # ← Change this line to test any mode
+    selected_mode = "0-10V"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other4
+def test_XM_UIUI_0_5V_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+
+    # ← Change this line to test any mode
+    selected_mode = "0-5V"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other4
+def test_XM_UIUI_0_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+
+    # ← Change this line to test any mode
+    selected_mode = "0-20mA"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other4
+def test_XM_UIUI_4_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+
+    # ← Change this line to test any mode
+    selected_mode = "4-20mA"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other4
+def test_XM_UIUI_Resistance_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+
+    # ← Change this line to test any mode
+    selected_mode = "Resistance"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other4
+def test_XM_UIUI_PT100_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "PT100"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.assert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other
+def test_XM_UIUI_PT1000_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "PT1000"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.assert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other
+def test_XM_UIUI_10K_NTC_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "10K -NTC"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.assert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other
+def test_XM_UIUI_20K_NTC_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "20K -NTC"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.assert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.failed
+def test_XM_AIUI_0_10V_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+
+    # ← Change this line to test any mode
+    selected_mode = "0 to 10V"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.failed
+def test_XM_AIUI_0_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+
+    # ← Change this line to test any mode
+    selected_mode = "0 to 20mA"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.failed
+def test_XM_AIUI_4_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+
+    # ← Change this line to test any mode
+    selected_mode = "4 to 20mA"   # or "Analog", "PWM", "Counter", etc.
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add the module
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion form (only once)
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+
+    # Select mode dynamically
+    io_config.select_mode(selected_mode)
+
+    # Save to apply changes
+    io_config.save_expansion()
+
+    io_config.assert_mode_matches_selected(selected_mode)
+
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_digital_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "Digital"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_UOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_UO_0_10V_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "0-10V"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_UOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_UO_4_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "4-20mA"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_UOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_UO_0_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"
+    selected_mode = "0-20mA"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_UOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_AO_0_10V_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+    selected_mode = "0-10V"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_AOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_AO_4_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+    selected_mode = "4-20mA"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_AOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other5
+def test_XM_AO_0_20mA_mode(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+    selected_mode = "0-20mA"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_for_open_UO()
+    print(f"\n--- Testing mode: '{selected_mode}' ---")
+    io_config.select_mode(selected_mode)
+    io_config.save_expansion()
+    io_config.for_AOassert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+@pytest.mark.other
+def test_OR_Reflection(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-AI2-AO-2"
+    NEW_TAG_NAME = "kunal_test_tag"
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    tag_box = io_config.expansion_tag_textbox
+    tag_box.set_text(NEW_TAG_NAME)
+    tag_box.type_keys("{ENTER}")
+    io_config.save_expansion()
+
+@pytest.mark.other4
+def test_tag_rename_updates_or_tag(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    AIAO_MODEL = "XM-AI2-AO-2"           
+    ORIGINAL_TAG = "AnalogInput_AI0"   
+    NEW_TAG_NAME = "MyCustomAI"          
+    OR_TAG_ROW = 4                                         
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(AIAO_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    tag_box = io_config.expansion_tag_textbox
+    tag_box.set_text(NEW_TAG_NAME)
+    tag_box.type_keys("{ENTER}")
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_or_tag_prefix_matches_renamed(NEW_TAG_NAME, or_tag_row=OR_TAG_ROW)
+    print(f"Test passed: Tag renamed to '{NEW_TAG_NAME}' and OR tag updated correctly!")
+
+
+@pytest.mark.other4
+def test_tag_rename_updates_ol_tag(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    AIAO_MODEL = "XM-AI2-AO-2"          
+    ORIGINAL_TAG = "AnalogInput_AI0"    
+    NEW_TAG_NAME = "MyCustomAI"         
+    OL_TAG_ROW = 5                    
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(AIAO_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    tag_box = io_config.expansion_tag_textbox
+    tag_box.set_text(NEW_TAG_NAME)
+    tag_box.type_keys("{ENTER}")
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_ol_tag_prefix_matches_renamed(NEW_TAG_NAME, ol_tag_row=OL_TAG_ROW)
+
+@pytest.mark.other
+def test_UI_tag_rename_updates_or_tag(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    UIUO_MODEL = "XM-UI4-UO2"           
+    ORIGINAL_TAG = "UniversalInput_UI0"   
+    NEW_TAG_NAME = "Change"          
+    OR_TAG_ROW = 6                                         
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(UIUO_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    tag_box = io_config.expansion_tag_textbox
+    tag_box.set_text(NEW_TAG_NAME)
+    tag_box.type_keys("{ENTER}")
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_or_tag_prefix_matches_renamed(NEW_TAG_NAME, or_tag_row=OR_TAG_ROW)
+    print(f"Test passed: Tag renamed to '{NEW_TAG_NAME}' and OR tag updated correctly!")
+
+
+@pytest.mark.other
+def test_UO_tag_rename_updates_ol_tag(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    AIAO_MODEL = "XM-UI4-UO2"          
+    ORIGINAL_TAG = "AnalogInput_AI0"    
+    NEW_TAG_NAME = "MyCustomOL"         
+    OL_TAG_ROW = 7                    
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(AIAO_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    tag_box = io_config.expansion_tag_textbox
+    tag_box.set_text(NEW_TAG_NAME)
+    tag_box.type_keys("{ENTER}")
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_ol_tag_prefix_matches_renamed(NEW_TAG_NAME, ol_tag_row=OL_TAG_ROW)
+
+@pytest.mark.other6
+def test_check_DI_show_logical_address(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    MODEL_WITH_TAGS = "XM-DI-16"
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(MODEL_WITH_TAGS)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.enable_show_logical_address()
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_show_logical_address_grid_checked()
+    print("Test passed: 'Show Logical Address' enabled → grid cell is checked!")
+
+@pytest.mark.other6
+def test_check_D0_show_logical_address(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    MODEL_WITH_TAGS = "XM-DO-16"
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(MODEL_WITH_TAGS)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.enable_show_logical_address()
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_show_logical_address_grid_checked()
+    print("Test passed: 'Show Logical Address' enabled → grid cell is checked!")
+
+@pytest.mark.other6
+def test_check_AI_show_logical_address(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    MODEL_WITH_TAGS = "XM-AI2-AO-2"
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(MODEL_WITH_TAGS)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.enable_show_logical_address()
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_show_logical_address_grid_checked()
+    print("Test passed: 'Show Logical Address' enabled → grid cell is checked!")
+
+@pytest.mark.other6
+def test_check_UI_show_logical_address(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    MODEL_WITH_TAGS = "XM-UI4-UO2"
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(MODEL_WITH_TAGS)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.enable_show_logical_address()
+    io_config.save_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.assert_show_logical_address_grid_checked()
+    print("Test passed: 'Show Logical Address' enabled → grid cell is checked!")
+
+@pytest.mark.expansion
+def test_xm_di16_has_16_digital_inputs(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-DI-16"
+
+    # This is your dynamic expected count
+    expected_di_count = 16
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    project_page.double_click_expansion()
+    project_page.win.wait("ready", timeout=10)
+
+    # Optional model check
+    added_model = io_config.get_expansion_model_name()
+    assert EXPANSION_MODEL.upper() in added_model.upper(), \
+        f"Wrong module! Expected '{EXPANSION_MODEL}', got '{added_model}'"
+
+    # FIXED LINE – THIS IS WHAT WAS MISSING
+    io_config.assert_digital_input_count(expected_di_count)
+
+    print(f"Test passed: {EXPANSION_MODEL} has exactly {expected_di_count} digital inputs!")
+
+
+@pytest.mark.other4
+def test_print_all_tags_from_expansion(main_page, project_page, io_config):
+    PLC_MODEL = "XM-14-DT"
+    EXPANSION_MODEL = "XM-UI4-UO2"  # or any module with tags
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.wait_for_visible()
+    project_page.click_ioconfig()
+
+    # Add module if needed
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+
+    # Open the expansion grid/form
+    project_page.double_click_expansion()
+
+    # Give extra time for grid to fully render tags
+    project_page.win.wait("ready", timeout=15)
+    time.sleep(1)  # Small safety sleep — grids sometimes need it
+
+    # Now print ALL tags
+    io_config.print_all_tags_in_column(max_rows=32, timeout_per_row=12)
+
+    print("Test passed: All tags from Tag column printed!")
+
+
+# def test_Demo(main_page, project_page, io_config):
+#     PLC_MODEL = "XM-14-DT"
+#     EXPANSION_MODEL = "XM-DI-16"
+#     main_page.click_new_project()
+#     main_page.select_model_and_confirm(PLC_MODEL)
+#     project_page.wait_for_visible()
+#     project_page.click_ioconfig()
+#     # Add the expansion module
+#     project_page.right_click_expansion_io()
+#     project_page.click_add_device_expansion()
+#     io_config.open_dropdown()
+#     io_config.select_model(EXPANSION_MODEL)
+#     io_config.click_add()
+#     project_page.double_click_expansion()
+#     count = project_page.get_system_tags_gridrow_count()
+#     project_page. get_multivalue_expansion(count)
+#     project_page.click_modbus_tcp_client()
+#     project_page.print_all_items_in_dropdown()
+#     project_page.print_dropdown_items_that_match_expansion()
+
+#     # assert count > 0, "System tags grid is empty"
+
+#     # print("Test passed: System tags grid is not empty")
+
+def test_2_default_row_count_for_resistance_table(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.click_ioconfig()
+
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name("sdfs")
+    io_config.doubleclick_resistance_lookup_table()
+
+    io_config.wait_until_resistance_rows(2)
+
+    io_config.assert_resistance_lookup_table_has_2_rows()
+    print("Test passed: Resistance lookup table has 2 rows!")  
+
+
+
+def test_add_resistance_value(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+    RESISTANCE = 143
+    OUTPUT = 455
+
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.click_ioconfig()
+
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME)
+    io_config.doubleclick_resistance_lookup_table()
+
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+
+    # Right click on created table
+    io_config.rightclick_resistance_table(TABLE_NAME)
+
+    # Select "Add Resistance Values" via keyboard
+    io_config.select_add_resistance_values_from_context_menu()
+
+    io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
+    io_config.click_save_resistance_value()
+
+    io_config.assert_resistance_and_output_values_added(
+    expected_resistance=RESISTANCE,
+    expected_output=OUTPUT
+)
+
+def test_add_resistance_value_limit_20(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+
+    # Prepare 10 resistance-output pairs
+    resistance_data = [
+        (101, 10),
+        (200, 20),
+        (300, 30),
+        (400, 40),
+        (500, 50),
+        (600, 60),
+        (700, 70),
+        (800, 80),
+        (900, 90),
+        (1000, 100),
+        (1012, 10),
+        (2002, 20),
+        (3003, 30),
+        (4004, 40),
+        (5006, 50),
+        (6006, 60),
+        (7007, 70),
+        (8008, 80),
+    ]
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.click_ioconfig()
+
+    # Create resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME)
+    io_config.doubleclick_resistance_lookup_table()
+
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+
+    # Add 10 resistance-output values
+    for resistance, output in resistance_data:
+
+        io_config.rightclick_resistance_table(TABLE_NAME)
+        io_config.select_add_resistance_values_from_context_menu()
+
+        io_config.enter_resistance_and_output_values(resistance, output)
+        io_config.click_save_resistance_value()
+
+    # Optional final validation
+    io_config.assert_resistance_table_row_count(expected_count=20)
+
+
+def test_add_table_limit5(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_PREFIX = "Lookup"
+
+    table_names = [
+        "Lookup_table",
+        "Lookup_table1",
+        "Lookup_table2",
+        "Lookup_table3",
+        "Lookup_table5",
+    ]
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.click_ioconfig()
+
+    # Add first table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(table_names[0])
+
+    # Expand parent node
+    io_config.doubleclick_resistance_lookup_table()
+    io_config.verify_resistance_table_exists(table_names[0])
+
+    # Add remaining tables
+    for table_name in table_names[1:]:
+        io_config.rightclick_resistance_lookup_table()
+        io_config.click_add_resistance_lookup_table()
+        io_config.enter_resistance_name(table_name)
+        io_config.verify_resistance_table_exists(table_name)
+
+    # ✅ FINAL ASSERTION (prefix + count)
+    io_config.assert_resistance_tables_by_prefix_and_count(
+        table_prefix=TABLE_PREFIX,
+        expected_table_names=table_names,
+        expected_count=5
+    )
+
+def test_delete_resistance_table(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.click_ioconfig()
+
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME)
+
+    # Expand node so table is visible
+    io_config.doubleclick_resistance_lookup_table()
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+
+    # Delete the table
+    io_config.delete_resistance_table(TABLE_NAME)
+
+    # ✅ FINAL ASSERTION → NO tables should exist
+    io_config.assert_no_resistance_tables_exist(table_prefix="Lookup")
+
+def test_edit_resistance_tablename(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+    EDITED_NAME = "Edited_table"
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.click_ioconfig()
+
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME)
+
+    # Expand node so table is visible
+    io_config.doubleclick_resistance_lookup_table()
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+
+    # Edit table name
+    io_config.edit_resistance_table_name(TABLE_NAME)
+    io_config.enter_resistance_name(EDITED_NAME)
+
+    # Existing verify (kept)
+    io_config.verify_resistance_table_exists(EDITED_NAME)
+
+    # ✅ STRONG RENAME ASSERTION
+    io_config.assert_resistance_table_renamed_in_node(
+        old_name=TABLE_NAME,
+        new_name=EDITED_NAME
+    )
+
+def test_resistance_table_in_universal_mode(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+    EXPANSION_MODEL = "XBLD-UI4-UO2"
+    selected_mode = "Lookup_table"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.click_ioconfig()
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME) 
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.select_mode(selected_mode)
+    time.sleep(2)
+    io_config.save_expansion()
+    io_config.assert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+def test_edited_resistance_table_in_universal_mode(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+    EXPANSION_MODEL = "XBLD-UI4-UO2"
+    EDITED_NAME = "Modified_table"
+    selected_mode = "Modified_table"   
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    project_page.click_ioconfig()
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME) 
+    io_config.doubleclick_resistance_lookup_table()
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+    io_config.edit_resistance_table_name(TABLE_NAME)
+    io_config.enter_resistance_name(EDITED_NAME)
+    io_config.verify_resistance_table_exists(EDITED_NAME)
+    project_page.right_click_expansion_io()
+    project_page.click_add_device_expansion()
+    io_config.open_dropdown()
+    io_config.select_model(EXPANSION_MODEL)
+    io_config.click_add()
+    project_page.double_click_expansion()
+    project_page.doubleclick_open_expansion_form()
+    io_config.select_mode(selected_mode)
+    time.sleep(2)
+    io_config.save_expansion()
+    io_config.assert_mode_matches_selected(selected_mode)
+    print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+    
+#HOLD
+# def test_delete_resistance_table_in_universal_mode(main_page, project_page, io_config):
+
+#     PLC_MODEL = "XBLD-14E"
+#     TABLE_NAME = "Lookup_table"
+#     EXPANSION_MODEL = "XBLD-UI4-UO2"
+#     selected_mode = "Lookup_table"   
+#     main_page.click_new_project()
+#     main_page.select_model_and_confirm(PLC_MODEL)
+#     project_page.click_ioconfig()
+#     # Add resistance lookup table
+#     io_config.rightclick_resistance_lookup_table()
+#     io_config.click_add_resistance_lookup_table()
+#     io_config.enter_resistance_name(TABLE_NAME) 
+#     io_config.doubleclick_resistance_lookup_table()
+#     io_config.verify_resistance_table_exists(TABLE_NAME)
+#     io_config.delete_resistance_table(TABLE_NAME)
+#     io_config.assert_no_resistance_tables_exist(table_prefix="Lookup")
+#     project_page.right_click_expansion_io()
+#     project_page.click_add_device_expansion()
+#     io_config.open_dropdown()
+#     io_config.select_model(EXPANSION_MODEL)
+#     io_config.click_add()
+#     project_page.double_click_expansion()
+#     project_page.doubleclick_open_expansion_form()
+#     io_config.select_mode(selected_mode)
+#     io_config.assert_mode_does_not_matches_selected_resistance_mode(selected_mode)
+#     print(f"Test passed: Mode '{selected_mode}' correctly reflected in Mode column!")
+
+
+# def test_add_resistance_value_range(main_page, project_page, io_config):
+
+#     PLC_MODEL = "XBLD-14E"
+#     TABLE_NAME = "Lookup_table"
+#     RESISTANCE = 2147483647
+#     OUTPUT = 2147483647
+
+
+#     main_page.click_new_project()
+#     main_page.select_model_and_confirm(PLC_MODEL)
+
+#     project_page.click_ioconfig()
+
+#     # Add resistance lookup table
+#     io_config.rightclick_resistance_lookup_table()
+#     io_config.click_add_resistance_lookup_table()
+#     io_config.enter_resistance_name(TABLE_NAME)
+#     io_config.doubleclick_resistance_lookup_table()
+
+#     io_config.verify_resistance_table_exists(TABLE_NAME)
+
+#     # Right click on created table
+#     io_config.rightclick_resistance_table(TABLE_NAME)
+
+#     # Select "Add Resistance Values" via keyboard
+#     io_config.select_add_resistance_values_from_context_menu()
+
+#     io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
+#     io_config.click_save_resistance_value()
+
+#     io_config.assert_resistance_and_output_values_added(
+#     expected_resistance=RESISTANCE,
+#     expected_output=OUTPUT
+# )
+
+def test_edit_resistance_value(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+    RESISTANCE = 143
+    OUTPUT = 455
+
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.click_ioconfig()
+
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME)
+    io_config.doubleclick_resistance_lookup_table()
+
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+
+    # Right click on created table
+    io_config.rightclick_resistance_table(TABLE_NAME)
+
+    # Select "Add Resistance Values" via keyboard
+    io_config.select_add_resistance_values_from_context_menu()
+
+    io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
+    io_config.click_save_resistance_value()
+    time.sleep(2)
+    io_config.edit_resistance_value()
+    time.sleep(2)
+    io_config.update_resistance_and_output_values(new_resistance=123, new_output=189)
+    io_config.click_save_resistance_value()
+    io_config.assert_resistance_and_output_values_in_grid(
+    row_index=1,
+    expected_resistance=123,
+    expected_output=189
+)
+
+# def test_delete_resistance_value(main_page, project_page, io_config):
+
+#     PLC_MODEL = "XBLD-14E"
+#     TABLE_NAME = "Lookup_table"
+#     RESISTANCE = 143
+#     OUTPUT = 455
+
+
+#     main_page.click_new_project()
+#     main_page.select_model_and_confirm(PLC_MODEL)
+
+#     project_page.click_ioconfig()
+
+#     # Add resistance lookup table
+#     io_config.rightclick_resistance_lookup_table()
+#     io_config.click_add_resistance_lookup_table()
+#     io_config.enter_resistance_name(TABLE_NAME)
+#     io_config.doubleclick_resistance_lookup_table()
+
+#     io_config.verify_resistance_table_exists(TABLE_NAME)
+
+#     # Right click on created table
+#     io_config.rightclick_resistance_table(TABLE_NAME)
+
+#     # Select "Add Resistance Values" via keyboard
+#     io_config.select_add_resistance_values_from_context_menu()
+
+#     io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
+#     io_config.click_save_resistance_value()
+#     io_config.rightclick_resistance_value_row1()
+#     io_config.delete_resistance_value_row1()
+#     io_config.confirm_delete_resistance_value()
+#     io_config.assert_specific_resistance_row_not_present(deleted_row_index=2)
+
+# def test_user_cannot_delete_default_resistance_value(main_page, project_page, io_config):
+
+#     PLC_MODEL = "XBLD-14E"
+#     TABLE_NAME = "Lookup_table"
+#     main_page.click_new_project()
+#     main_page.select_model_and_confirm(PLC_MODEL)
+
+#     project_page.click_ioconfig()
+
+#     # Add resistance lookup table
+#     io_config.rightclick_resistance_lookup_table()
+#     io_config.click_add_resistance_lookup_table()
+#     io_config.enter_resistance_name(TABLE_NAME)
+#     io_config.doubleclick_resistance_lookup_table()
+
+#     io_config.verify_resistance_table_exists(TABLE_NAME)
+
+#     # Right click on created table
+#     io_config.rightclick_resistance_table(TABLE_NAME)
+#     io_config.delete_resistance_value_row1()
+#     io_config.confirm_delete_resistance_value()
+#     io_config.assert_user_cannot_delete_default_row(deleted_row_index=1)
+
+def test_copy_resistance_value(main_page, project_page, io_config):
+
+    PLC_MODEL = "XBLD-14E"
+    TABLE_NAME = "Lookup_table"
+    RESISTANCE = 143
+    OUTPUT = 455
+
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+
+    project_page.click_ioconfig()
+
+    # Add resistance lookup table
+    io_config.rightclick_resistance_lookup_table()
+    io_config.click_add_resistance_lookup_table()
+    io_config.enter_resistance_name(TABLE_NAME)
+    io_config.doubleclick_resistance_lookup_table()
+    io_config.verify_resistance_table_exists(TABLE_NAME)
+
+    # Right click on created table
+    io_config.rightclick_resistance_table(TABLE_NAME)
+
+    # Select "Add Resistance Values" via keyboard
+    io_config.select_add_resistance_values_from_context_menu()
+
+    io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
+    io_config.click_save_resistance_value()
+    io_config.copy_paste_resistance_value(row_index=0)
+    io_config.update_resistance_and_output_values(new_resistance=146, new_output=189)
+    io_config.click_save_resistance_value()
+    io_config.assert_resistance_and_output_values_in_grid(
+    row_index=3,
+    expected_resistance=146,
+    expected_output=189
+    )
+
+#Hold
+# def test_cut_resistance_value(main_page, project_page, io_config):
+
+#     PLC_MODEL = "XBLD-14E"
+#     TABLE_NAME = "Lookup_table"
+#     RESISTANCE = 143
+#     OUTPUT = 455
+
+#     main_page.click_new_project()
+#     main_page.select_model_and_confirm(PLC_MODEL)
+
+#     project_page.click_ioconfig()
+
+#     # Add resistance lookup table
+#     io_config.rightclick_resistance_lookup_table()
+#     io_config.click_add_resistance_lookup_table()
+#     io_config.enter_resistance_name(TABLE_NAME)
+#     io_config.doubleclick_resistance_lookup_table()
+#     io_config.verify_resistance_table_exists(TABLE_NAME)
+
+#     # Right click on created table
+#     io_config.rightclick_resistance_table(TABLE_NAME)
+
+#     # Select "Add Resistance Values" via keyboard
+#     io_config.select_add_resistance_values_from_context_menu()
+
+#     io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
+#     io_config.click_save_resistance_value()
+#     io_config.cut_paste_resistance_value(row_index=2)
+#     io_config.update_resistance_and_output_values(new_resistance=146, new_output=189)
+#     io_config.click_save_resistance_value()
+#     io_config.assert_resistance_and_output_values_in_grid(
+#     row_index=3,
+#     expected_resistance=146,
+#     expected_output=189
+#     )
