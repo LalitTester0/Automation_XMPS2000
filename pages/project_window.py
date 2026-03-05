@@ -219,6 +219,13 @@ class ProjectWindow:
         actual = self.grid.item_count()
         assert actual == expected, f"Expected {expected} rows, got {actual}"
 
+
+    def get_row_count(self):
+        self.grid.wait("visible", timeout=TIMEOUT_MED)
+        actual = self.grid.item_count()
+        print("row count",actual)   
+        return actual
+
     def click_system_tags(self):
         self._expand_tags()
         self.system_tags_node.click_input()

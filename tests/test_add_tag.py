@@ -12,6 +12,8 @@ import sys
 import pyperclip
 from excel_report import update_excel_result
 from tests.conftest import project_page
+import pytest_check as check
+
 
 @pytest.mark.UD_tags
 @pytest.mark.dependency
@@ -41,10 +43,36 @@ def test_Zero_add_user_defined_tag(main_page, project_page):
     time.sleep(1)
     project_page.assert_row_count(expected=0)
 
+@pytest.mark.UD_tags
+def test_merge_add_user_defined_tag(main_page, project_page):
+    PLC_MODEL = "XM-14-DT"
+    main_page.click_new_project()
+    main_page.select_model_and_confirm(PLC_MODEL)
+    time.sleep(2)
+    project_page.open_add_user_tag_dialog()
+    dialog = NewProjectDialog(project_page.win)
+    dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
+    dialog.cancel()
+    time.sleep(1)
+    actual_rows = project_page.get_row_count()
+    
+    # Validation 1: Check row count is 0 after cancel
+    if check.equal(actual_rows, 0, f"Validation 1: Row count should be 0, got {actual_rows}"):
+        print(f"PASSED: Validation 1 - Row count is {actual_rows} as expected.")
+    
+    # Validation 2: Check window title contains PLC model
+    title = project_page.win.window_text()
+    if check.is_in(PLC_MODEL, title, f"Validation 2: {PLC_MODEL} not in title '{title}'"):
+        print(f"PASSED: Validation 2 - Window title correctly contains {PLC_MODEL}.")
+    
+    # Validation 3: Demonstration of another check (e.g. if specific node exists)
+    # We can add more as needed.
+
+
+
 @pytest.mark.other
 def test_get_system_tags(main_page, project_page):
     PLC_MODEL = "XBLD-17E"
-
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
     project_page.click_system_tags()

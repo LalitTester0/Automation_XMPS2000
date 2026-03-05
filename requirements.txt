@@ -4,3 +4,4 @@ pywinauto
 pytest-html
 pillow
 pyscreeze
+pytest-check
