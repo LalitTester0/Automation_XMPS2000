@@ -16,7 +16,7 @@ from tests.conftest import project_page
 @pytest.mark.UD_tags
 @pytest.mark.dependency
 def test_add_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
+    PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
     time.sleep(2) 

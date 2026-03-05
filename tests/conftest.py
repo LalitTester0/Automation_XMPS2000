@@ -1,3 +1,4 @@
+import logging
 import pytest
 import os
 import sys
@@ -5,6 +6,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pyautogui
 from datetime import datetime
 from pywinauto import Application
+import pywinauto.timings
+# Suppress pywinauto logging noise
+logging.getLogger('pywinauto').setLevel(logging.WARNING)
 from config import EXE_PATH
 from pages.main_window import MainWindow
 from pages.project_window import ProjectWindow
