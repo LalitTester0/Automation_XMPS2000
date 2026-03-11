@@ -12,20 +12,41 @@ import sys
 import pyperclip
 from excel_report import update_excel_result
 from tests.conftest import project_page
+import pytest_check as check
+from utils import verify_equal
 
-
-def test_add_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
+@pytest.mark.UD_tags
+def test_merge_add_user_defined_tag(main_page, project_page):
+    PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
-    time.sleep(2) 
+    time.sleep(2)
     project_page.open_add_user_tag_dialog()
     dialog = NewProjectDialog(project_page.win)
     dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
-    dialog.save()
-    time.sleep(1)
-    project_page.assert_row_count(expected=1)
     dialog.cancel()
+    time.sleep(1)
+    actual_rows = project_page.get_row_count12()
+    verify_equal(actual_rows, 1, "After click on cancel button row count")
+    project_page.click_add_user_defined_tags()
+    dialog = NewProjectDialog(project_page.win)
+    dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
+    dialog.save()
+    time.sleep(1)   
+    actual_rows = project_page.get_row_count12()
+    verify_equal(actual_rows, 1, "After click on save button row count")
+    dialog.cancel()
+    EXPECTED_DATATYPE = "Byte"  # must match exactly what grid shows
+    project_page.click_add_user_defined_tags()
+    dialog.fill(
+        tag_name="BYTE1",
+        logical_addr=DEFAULT_LOGICAL_ADDR
+    )
+    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
+    dialog.save()    
+    actual_rows = project_page.get_row_count12()
+    verify_equal(actual_rows, 2, "After click on save button row count")
+    project_page.get_row_datatype(2)
 
 def test_add_byte_user_defined_tag(main_page, project_page):
     PLC_MODEL = "XBLD-17E"

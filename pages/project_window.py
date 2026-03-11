@@ -220,7 +220,7 @@ class ProjectWindow:
         assert actual == expected, f"Expected {expected} rows, got {actual}"
 
 
-    def get_row_count(self):
+    def get_row_count12(self):
         self.grid.wait("visible", timeout=TIMEOUT_MED)
         actual = self.grid.item_count()
         print("row count",actual)   
@@ -384,6 +384,7 @@ class ProjectWindow:
             control_type="Edit"
         )
         cell.wait("visible", timeout=10)
+        print(cell.get_value())
         return cell.get_value()
 
     def assert_row_datatype(self, expected: str, row=0):
@@ -391,6 +392,7 @@ class ProjectWindow:
         assert actual == expected, (
             f"DataType mismatch at row {row}: expected '{expected}', got '{actual}'"
         )
+
 
     def get_row_tag_name(self, row=0):
         """Reads the Tag name from the grid."""
