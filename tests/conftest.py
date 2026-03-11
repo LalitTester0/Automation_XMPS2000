@@ -1,3 +1,4 @@
+import logging
 import pytest
 import os
 import sys
@@ -5,6 +6,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pyautogui
 from datetime import datetime
 from pywinauto import Application
+import pywinauto.timings
+# Suppress pywinauto logging noise
+logging.getLogger('pywinauto').setLevel(logging.WARNING)
 from config import EXE_PATH
 from pages.main_window import MainWindow
 from pages.project_window import ProjectWindow
@@ -12,6 +16,8 @@ from pages.io_config import IOConfig
 # from pages.io_config import ResistanceLookupPage
 import ctypes
 import shutil
+from utils import clear_verification_results, get_verification_results
+from pytest_html import extras
 # ==================== SCREENSHOT ON FAILURE + SCENARIO ====================
  
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -42,6 +48,8 @@ def pytest_runtest_makereport(item, call):
             rep.screenshot_path = os.path.abspath(screenshot_path)
         except Exception as e:
             print(f"Failed to take screenshot: {e}")
+
+    # Screenshot storage is handled above. This hook is now focused on scenario/screenshot capture.
  
  
 # ==================== CUSTOM COLUMN ORDER ====================
@@ -60,9 +68,12 @@ def pytest_html_results_table_header(cells):
     """
     # Insert Scenario after "Test" column (becomes position 2)
     cells.insert(2, "<th class='sortable'>Scenario</th>")
+    
+    # Insert Verifications after "Scenario" (becomes position 3)
+    cells.insert(3, "<th class='sortable' style='width: 300px;'>Verifications</th>")
    
-    # Insert Screenshot after "Duration" (which will be at position 4 after previous insert)
-    cells.insert(4, "<th class='sortable'>Screenshot</th>")
+    # Insert Screenshot after "Duration" (which will be at position 5 after previous inserts)
+    cells.insert(5, "<th class='sortable'>Screenshot</th>")
  
  
 def pytest_html_results_table_row(report, cells):
@@ -73,7 +84,21 @@ def pytest_html_results_table_row(report, cells):
     scenario_display = scenario.replace("\n", "<br>")  # Support multi-line
     cells.insert(2, f"<td class='col-scenario'>{scenario_display}</td>")
  
-    # Insert Screenshot after "Duration" (position 4)
+    # Insert Verifications after "Scenario" (position 3)
+    results = get_verification_results()
+    verif_html = ""
+    if results:
+        for res in results:
+            color = "green" if res["status"] == "PASS" else "red"
+            verif_html += f"""
+            <div style='color:{color}; font-size: 0.9em; margin-bottom: 2px; border-bottom: 1px solid #eee;'>
+                <b>{res["status"]}</b>: {res["message"]} 
+                <br><small>(Exp: {res["expected"]}, Act: {res["actual"]})</small>
+            </div>
+            """
+    cells.insert(3, f"<td>{verif_html}</td>")
+
+    # Insert Screenshot after "Duration" (position 5)
     if hasattr(report, "screenshot_path"):
         path = report.screenshot_path
         if path and os.path.exists(path):
@@ -110,6 +135,12 @@ def pytest_configure(config):
             ".col-screenshot img { border: 1px solid #ddd; border-radius: 4px; }"
             "th.sortable { background-color: #f5f5f5; }"
         )
+
+@pytest.fixture(autouse=True)
+def clear_verifications():
+    """Clear verification results before each test."""
+    clear_verification_results()
+    yield
  
  
 @pytest.fixture

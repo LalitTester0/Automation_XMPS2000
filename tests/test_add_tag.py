@@ -12,11 +12,14 @@ import sys
 import pyperclip
 from excel_report import update_excel_result
 from tests.conftest import project_page
+import pytest_check as check
+from utils import verify_equal
+
 
 @pytest.mark.UD_tags
 @pytest.mark.dependency
 def test_add_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
+    PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
     time.sleep(2) 
@@ -41,18 +44,18 @@ def test_Zero_add_user_defined_tag(main_page, project_page):
     time.sleep(1)
     project_page.assert_row_count(expected=0)
 
+
+
+
 @pytest.mark.other
 def test_get_system_tags(main_page, project_page):
     PLC_MODEL = "XBLD-17E"
-
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
     project_page.click_system_tags()
     count = project_page.get_system_tags_gridrow_count()
     project_page.get_multivalue_by_row_header(10)
-
     assert count > 0, "System tags grid is empty"
-
     print("Test passed: System tags grid is not empty")
 
 @pytest.mark.modbus_tcp_client

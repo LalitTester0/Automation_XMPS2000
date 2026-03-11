@@ -328,8 +328,8 @@ div.media {
   </head>
   <body>
     <h1 id="title">XMPS 2000 Automation Test Report</h1>
-    <p>Report generated on 18-Feb-2026 at 17:25:10 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
-        v4.1.1</p>
+    <p>Report generated on 09-Mar-2026 at 13:23:16 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.2.0</p>
     <div id="environment-header">
       <h2>Environment</h2>
     </div>
@@ -344,26 +344,27 @@ div.media {
     <template id="template_results-table__body--empty">
       <tbody class="results-table-row">
         <tr id="not-found-message">
-          <td colspan="6">No results found. Check the filters.</th>
+          <td colspan="7">No results found. Check the filters.</td>
         </tr>
+      </tbody>
     </template>
     <template id="template_results-table__tbody">
       <tbody class="results-table-row">
         <tr class="collapsible">
         </tr>
         <tr class="extras-row">
-          <td class="extra" colspan="6">
+          <td class="extra" colspan="7">
             <div class="extraHTML"></div>
             <div class="media">
               <div class="media-container">
-                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__nav--left">&lt;</div>
                   <div class="media-container__viewport">
                     <img src="" />
                     <video controls>
                       <source src="" type="video/mp4">
                     </video>
                   </div>
-                  <div class="media-container__nav--right">></div>
+                  <div class="media-container__nav--right">&gt;</div>
                 </div>
                 <div class="media__name"></div>
                 <div class="media__counter"></div>
@@ -382,7 +383,7 @@ div.media {
         <h2>Summary</h2>
         <div class="additional-summary prefix">
         </div>
-        <p class="run-count">0 test took 00:00:12.</p>
+        <p class="run-count">1 test took 00:01:01.</p>
         <p class="filter">(Un)check the boxes to filter the results.</p>
         <div class="summary__reload">
           <div class="summary__reload__button hidden" onclick="location.reload()">
@@ -392,20 +393,22 @@ div.media {
         <div class="summary__spacer"></div>
         <div class="controls">
           <div class="filters">
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled/>
-            <span class="failed">0 Failed,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" >
+            <span class="failed">1 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" disabled>
             <span class="passed">0 Passed,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled>
             <span class="skipped">0 Skipped,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled>
             <span class="xfailed">0 Expected failures,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled>
             <span class="xpassed">0 Unexpected passes,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" />
-            <span class="error">1 Errors,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled>
             <span class="rerun">0 Reruns</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="retried" disabled>
+            <span class="retried">0 Retried,</span>
           </div>
           <div class="collapse">
             <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
@@ -423,15 +426,15 @@ div.media {
           <th class="sortable" data-column-type="result">Result</th>
           <th class="sortable" data-column-type="testId">Test</th>
           <th class='sortable'>Scenario</th>
+          <th class='sortable' style='width: 300px;'>Verifications</th>
           <th class="sortable" data-column-type="duration">Duration</th>
           <th class='sortable'>Screenshot</th>
           <th>Links</th>
         </tr>
       </thead>
     </table>
-  </body>
   <footer>
-    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.13.3&#34;, &#34;Platform&#34;: &#34;Windows-10-10.0.19045-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.0.2&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;dependency&#34;: &#34;0.6.0&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;}}, &#34;tests&#34;: {&#34;test_user_defined_tags.py::test_edit_user_defined_tag_name&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Error&#34;, &#34;testId&#34;: &#34;test_user_defined_tags.py::test_edit_user_defined_tag_name::setup&#34;, &#34;scenario&#34;: &#34;Test editing tag name by double-clicking the grid row.&#34;, &#34;duration&#34;: &#34;00:00:12&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Error&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_user_defined_tags.py::test_edit_user_defined_tag_name::setup&lt;/td&gt;&#34;, &#34;&lt;td class=&#39;col-scenario&#39;&gt;Test editing tag name by double-clicking the grid row.&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:12&lt;/td&gt;&#34;, &#34;&lt;td&gt;-&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;app = &amp;lt;pywinauto.application.Application object at 0x00000217277B0D70&amp;gt;, main_page = &amp;lt;pages.main_window.MainWindow object at 0x00000217277B2270&amp;gt;\n\n    @pytest.fixture\n    def project_page(app, main_page):\n        main_page.wait_for_visible()\n        project_win = ProjectWindow(app)\n&amp;gt;       project_win.wait_for_visible()\n\ntests\\conftest.py:136: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;pages.project_window.ProjectWindow object at 0x00000217277B2660&amp;gt;, timeout = 10\n\n    def wait_for_visible(self, timeout=TIMEOUT_MED):\n        win = self._find_window()\n        if not win:\n&amp;gt;               raise RuntimeError(&amp;quot;Project window with Tree not found&amp;quot;)\nE               RuntimeError: Project window with Tree not found\n\npages\\project_window.py:165: RuntimeError\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;XMPS 2000 Automation Test Report&#34;}"></div>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.4&#34;, &#34;Platform&#34;: &#34;Windows-10-10.0.19045-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.0.2&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;check&#34;: &#34;2.7.6&#34;, &#34;html&#34;: &#34;4.2.0&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;}}, &#34;tests&#34;: {&#34;tests/test_user_defined_tags.py::test_merge_add_user_defined_tag&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/test_user_defined_tags.py::test_merge_add_user_defined_tag&#34;, &#34;scenario&#34;: &#34;No scenario description provided&#34;, &#34;duration&#34;: &#34;00:01:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_defined_tags.py::test_merge_add_user_defined_tag&lt;/td&gt;&#34;, &#34;&lt;td class=&#39;col-scenario&#39;&gt;No scenario description provided&lt;/td&gt;&#34;, &#34;&lt;td&gt;\n            &lt;div style=&#39;color:red; font-size: 0.9em; margin-bottom: 2px; border-bottom: 1px solid #eee;&#39;&gt;\n                &lt;b&gt;FAIL&lt;/b&gt;: After click on cancel button row count \n                &lt;br&gt;&lt;small&gt;(Exp: 1, Act: 0)&lt;/small&gt;\n            &lt;/div&gt;\n            \n            &lt;div style=&#39;color:green; font-size: 0.9em; margin-bottom: 2px; border-bottom: 1px solid #eee;&#39;&gt;\n                &lt;b&gt;PASS&lt;/b&gt;: After click on save button row count \n                &lt;br&gt;&lt;small&gt;(Exp: 1, Act: 1)&lt;/small&gt;\n            &lt;/div&gt;\n            \n            &lt;div style=&#39;color:green; font-size: 0.9em; margin-bottom: 2px; border-bottom: 1px solid #eee;&#39;&gt;\n                &lt;b&gt;PASS&lt;/b&gt;: After click on save button row count \n                &lt;br&gt;&lt;small&gt;(Exp: 2, Act: 2)&lt;/small&gt;\n            &lt;/div&gt;\n            &lt;/td&gt;&#34;, &#34;&lt;td class=&#39;col-screenshot&#39;&gt;\n            &lt;img src=\&#34;assets/screenshots\\FAIL_test_merge_add_user_defined_tag_20260309_132316.png\&#34; alt=\&#34;Failure screenshot\&#34;\n                 width=\&#34;600\&#34; style=\&#34;max-width:100%; height:auto; cursor:zoom-in;\&#34;\n                 onclick=\&#34;window.open(this.src, &#39;_blank&#39;)\&#34;&gt;\n            &lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:01:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;FAILURE: check 0 == 1: After click on cancel button row count\ntests\\test_user_defined_tags.py:30 in test_merge_add_user_defined_tag() -&amp;gt; verify_equal(actual_rows, 1, &amp;quot;After click on cancel button row count&amp;quot;)\nmain_page  = &amp;lt;pages.main_window.MainWindow object at 0x000001AB22C2B470&amp;gt;\nproject_page = &amp;lt;pages.project_window.ProjectWindow object at 0x000001AB22F2FB60&amp;gt;\nPLC_MODEL  = &amp;#x27;XM-14-DT&amp;#x27;\ndialog     = &amp;lt;pages.dialogs.NewProjectDialog object at 0x000001AB22059850&amp;gt;\nactual_rows = 0\nutils.py:24 in verify_equal() -&amp;gt; check.equal(actual, expected, message)\nactual     = 0\nexpected   = 1\nmessage    = &amp;#x27;After click on cancel button row count&amp;#x27;\nstatus     = &amp;#x27;FAIL&amp;#x27;\nresult     = {&amp;#x27;status&amp;#x27;: &amp;#x27;FAIL&amp;#x27;,\n &amp;#x27;message&amp;#x27;: &amp;#x27;After click on cancel button row count&amp;#x27;,\n &amp;#x27;expected&amp;#x27;: 1,\n &amp;#x27;actual&amp;#x27;: 0}\n\n------------------------------------------------------------\nFailed Checks: 1\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;XMPS 2000 Automation Test Report&#34;}"></div>
     <script>
       (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
@@ -559,10 +562,10 @@ const dom = {
         }
 
         if (collapsed) {
-            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.collapsible > .col-result')?.classList.add('collapsed')
             resultBody.querySelector('.extras-row').classList.add('hidden')
         } else {
-            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+            resultBody.querySelector('.collapsible > .col-result')?.classList.remove('collapsed')
         }
 
         const media = []
@@ -1090,4 +1093,5 @@ module.exports = {
 },{}]},{},[4]);
     </script>
   </footer>
+  </body>
 </html>
