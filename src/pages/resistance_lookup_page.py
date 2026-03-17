@@ -1,7 +1,7 @@
 import time
 from pywinauto import Desktop, Application
 from pywinauto.keyboard import send_keys
-from config import TIMEOUT_MED
+from config.settings import TIMEOUT_MED
 from pywinauto.timings import always_wait_until, TimeoutError
 from pywinauto.timings import wait_until
 from pywinauto.timings import wait_until

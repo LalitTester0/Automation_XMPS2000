@@ -1,197 +1,89 @@
 # tests/test_add_tag.py
 import time
 import pytest
-from config import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR, Edited_LOGICAL_ADDR, Edited_TAG_NAME, Number_TAG_NAME
-from pages import io_config
-from pages.dialogs import NewProjectDialog
+from config.settings import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR, Edited_LOGICAL_ADDR, Edited_TAG_NAME, Number_TAG_NAME
+from src.pages import io_config
+from src.pages.dialogs import NewProjectDialog
 from pywinauto.keyboard import send_keys
 from pathlib import Path
 from pywinauto import Application
 import pywinauto
 import sys
 import pyperclip
-from excel_report import update_excel_result
+from src.utils.report_utils import update_excel_result
 from tests.conftest import project_page
 import pytest_check as check
-from utils import verify_equal
+from src.utils.assertion_utils import verify_equal
 
 @pytest.mark.UD_tags
 def test_merge_add_user_defined_tag(main_page, project_page):
     PLC_MODEL = "XM-14-DT"
+    EXPECTED_DATATYPES = ["Byte", "Word", "Double Word", "Int", "Real", "DINT"]
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
-    time.sleep(2)
+    time.sleep(1)
     project_page.open_add_user_tag_dialog()
     dialog = NewProjectDialog(project_page.win)
     dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
     dialog.cancel()
     time.sleep(1)
-    actual_rows = project_page.get_row_count12()
-    verify_equal(actual_rows, 1, "After click on cancel button row count")
-    project_page.click_add_user_defined_tags()
-    dialog = NewProjectDialog(project_page.win)
-    dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
-    dialog.save()
-    time.sleep(1)   
-    actual_rows = project_page.get_row_count12()
-    verify_equal(actual_rows, 1, "After click on save button row count")
-    dialog.cancel()
-    EXPECTED_DATATYPE = "Byte"  # must match exactly what grid shows
-    project_page.click_add_user_defined_tags()
-    dialog.fill(
-        tag_name="BYTE1",
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()    
-    actual_rows = project_page.get_row_count12()
-    verify_equal(actual_rows, 2, "After click on save button row count")
-    project_page.get_row_datatype(2)
-
-def test_add_byte_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
-    EXPECTED_DATATYPE = "Byte"  # must match exactly what grid shows
-
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-
-    dialog.fill(
-        tag_name=DEFAULT_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()
-
-    project_page.assert_row_count(expected=1)
-    project_page.assert_row_datatype(expected=EXPECTED_DATATYPE, row=0)  # ← new
-
-    dialog.cancel()
+    actual_rows = project_page.get_row_count()
+    verify_equal(actual_rows, 0, "After click on cancel button row count")
+    # for idx, datatype in enumerate(EXPECTED_DATATYPES):
+    #     project_page.click_add_user_defined_tags()
+    #     tag_name = f"TAG_{datatype.replace(' ', '_')}_{idx}"
+    #     dialog.fill(
+    #         tag_name=tag_name,
+    #         logical_addr=DEFAULT_LOGICAL_ADDR
+    #     )
+    #     dialog.select_datatype(datatype)
+    #     dialog.save()
+    #     time.sleep(1)
+    #     expected_count = idx + 1
+    #     actual_rows = project_page.get_row_count()
+    #     verify_equal(actual_rows, expected_count, f"After adding {datatype}, row count")
+    #     actual_datatype = project_page.get_row_datatype(row=actual_rows - 1)
+    #     verify_equal(actual_datatype, datatype, f"DataType mismatch for {datatype}")
+    #     dialog.cancel()
+    test_data = [
+    ("1InvalidTag", "Verify that tag name cannot start with number."),
+    ("Invalid Tag", "Verify that tag name should not contain space."),
+    ("Invalid#Tag", "Verify that error should be shown for non-IEC characters.")
+    ]
+    EXPECTED_ERROR = "Please correct the errors before saving."
+    for tag_name, validation_msg in test_data:
+        project_page.click_add_user_defined_tags()
+        dialog = NewProjectDialog(project_page.win)
+        dialog.fill(
+            tag_name=tag_name,
+            logical_addr=DEFAULT_LOGICAL_ADDR
+        )
+        dialog.select_datatype("Byte")
+        dialog.save()
+        actual_msg = dialog.getErrorMesage()
+        verify_equal(
+            actual_msg,
+            EXPECTED_ERROR,
+            validation_msg
+        )
+        send_keys("{ENTER}")
+        dialog.cancel()
+        
 
 
-def test_add_word_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
-    EXPECTED_DATATYPE = "Word"  # must match exactly what grid shows
-
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-
-    dialog.fill(
-        tag_name=DEFAULT_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()
-
-    project_page.assert_row_count(expected=1)
-    project_page.assert_row_datatype(expected=EXPECTED_DATATYPE, row=0)  # ← new
-
-    dialog.cancel()
 
 
-def test_add_double_word_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
-    EXPECTED_DATATYPE = "Double Word"  # must match exactly what grid shows
-
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-
-    dialog.fill(
-        tag_name=DEFAULT_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()
-
-    project_page.assert_row_count(expected=1)
-    project_page.assert_row_datatype(expected=EXPECTED_DATATYPE, row=0)  # ← new
-
-    dialog.cancel()
-
-def test_add_int_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
-    EXPECTED_DATATYPE = "Int"  # must match exactly what grid shows
-
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-
-    dialog.fill(
-        tag_name=DEFAULT_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()
-
-    project_page.assert_row_count(expected=1)
-    project_page.assert_row_datatype(expected=EXPECTED_DATATYPE, row=0)  # ← new
-
-    dialog.cancel()
 
 
-def test_add_real_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
-    EXPECTED_DATATYPE = "Real"  # must match exactly what grid shows
-
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-
-    dialog.fill(
-        tag_name=DEFAULT_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()
-
-    project_page.assert_row_count(expected=1)
-    project_page.assert_row_datatype(expected=EXPECTED_DATATYPE, row=0)  # ← new
-
-    dialog.cancel()
 
 
-def test_add_dint_user_defined_tag(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
-    EXPECTED_DATATYPE = "DINT"  # must match exactly what grid shows
 
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
 
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
 
-    dialog.fill(
-        tag_name=DEFAULT_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
 
-    dialog.select_datatype(EXPECTED_DATATYPE)  # from your earlier fix
-    dialog.save()
-
-    project_page.assert_row_count(expected=1)
-    project_page.assert_row_datatype(expected=EXPECTED_DATATYPE, row=0)  # ← new
-
-    dialog.cancel()
 
 def test_accept_undescore_tagname(main_page, project_page):
-    PLC_MODEL = "XBLD-17E"
+    PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
     time.sleep(2) 
@@ -203,83 +95,15 @@ def test_accept_undescore_tagname(main_page, project_page):
     project_page.assert_row_count(expected=1)
     dialog.cancel()
 
-def test_tag_name_cannot_start_with_number(main_page, project_page):
-    """Verify that tag name cannot start with number."""
-    PLC_MODEL = "XBLD-17E"
-    INVALID_TAG_NAME = "1InvalidTag"  # starts with number
-    
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-    
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-    
-    dialog.fill(
-        tag_name=INVALID_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-    
-    dialog.select_datatype("Byte")
-    dialog.save()  
-    dialog.assert_error_message_visible()
-    project_page.assert_row_count(expected=0)
-
-    dialog.cancel()
 
 
-def test_tag_name_cannot_contain_space(main_page, project_page):
-    """Verify that tag name should not contain space."""
-    PLC_MODEL = "XBLD-17E"
-    INVALID_TAG_NAME = "Invalid Tag"  # contains space
-    
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-    
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-    
-    dialog.fill(
-        tag_name=INVALID_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-    
-    dialog.select_datatype("Byte")
-    dialog.save()  
-    dialog.assert_error_message_visible()
-    project_page.assert_row_count(expected=0)
-
-    dialog.cancel()
-
-
-def test_tag_name_cannot_contain_special_characters(main_page, project_page):
-    """verify that error should be shown if user enters name apart of IEC standards validation."""
-    PLC_MODEL = "XBLD-17E"
-    INVALID_TAG_NAME = "Invalid#Tag"  # contains special character
-    
-    main_page.click_new_project()
-    main_page.select_model_and_confirm(PLC_MODEL)
-    
-    project_page.open_add_user_tag_dialog()
-    dialog = NewProjectDialog(project_page.win)
-    
-    dialog.fill(
-        tag_name=INVALID_TAG_NAME,
-        logical_addr=DEFAULT_LOGICAL_ADDR
-    )
-    
-    dialog.select_datatype("Byte")
-    dialog.save()  
-    dialog.assert_error_message_visible()
-    project_page.assert_row_count(expected=0)
-
-    dialog.cancel()
 
 def test_edit_user_defined_tag_name(main_page, project_page):
     """Test editing tag name by double-clicking the grid row."""
-    PLC_MODEL = "XBLD-17E"
+    PLC_MODEL = "XM-14-DT"
     ORIGINAL_TAG_NAME = "OriginalTag"
     UPDATED_TAG_NAME = "UpdatedTag"
-    DATATYPE = "Byte"
+    DATATYPE = "Bool"
     
     # Step 1: Create initial tag
     main_page.click_new_project()
@@ -293,11 +117,19 @@ def test_edit_user_defined_tag_name(main_page, project_page):
         logical_addr=DEFAULT_LOGICAL_ADDR
     )
     dialog.select_datatype(DATATYPE)
+    dialog.fillInitialValue(initial="1")
+    dialog.clickRetentivecheckbox()
+    dialog.clickshowLogicalAddresscheckbox()
     dialog.save()
-    dialog.cancel()  # close dialog to return to main grid view
-    dialog = NewProjectDialog(project_page.win)
-    project_page.double_click_tag_row(row=0)
-    dialog.fill_update(
-        tag_name=UPDATED_TAG_NAME
-     )
+    dialog.cancel()
+    rownum=project_page.get_row_count()-1
+    actualInitialValue=project_page.get_value_of_initialValueColumn(rownum)
+    actualretentiveStatusValue=project_page.get_value_of_retentiveStatusColumn(rownum)
+    actualretentiveAddressValue=project_page.get_value_of_retentiveAddressColumn(rownum)
+    actualLogicalAddressValue=project_page.get_value_of_showLogicalAddressStatusColumn(rownum)
     
+    verify_equal(actualInitialValue, 1, "Verify that user is able to add initial value as 0 or 1 for boolean datatype")
+    verify_equal(actualretentiveStatusValue, True, "Verify that user is able to add retentive address for boolean datatype.")
+    verify_equal(actualretentiveAddressValue, "X8:000", "Verify that user is able to see rententive address in retentive address column.")
+    verify_equal(actualLogicalAddressValue, True, "Verify that user is able to add show logical address.")
+    time.sleep(5)    

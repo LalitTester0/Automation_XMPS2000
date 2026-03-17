@@ -1,19 +1,19 @@
 # tests/test_add_tag.py
 import time
 import pytest
-from config import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR
-from pages import io_config
-from pages.dialogs import NewProjectDialog
+from config.settings import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR
+from src.pages import io_config
+from src.pages.dialogs import NewProjectDialog
 from pywinauto.keyboard import send_keys
 from pathlib import Path
 from pywinauto import Application
 import pywinauto
 import sys
 import pyperclip
-from excel_report import update_excel_result
+from src.utils.report_utils import update_excel_result
 from tests.conftest import project_page
 import pytest_check as check
-from utils import verify_equal
+from src.utils.assertion_utils import verify_equal
 
 
 @pytest.mark.UD_tags
@@ -101,12 +101,8 @@ def test_save_project(main_page, project_page):
     PLC_MODEL = "XBLD-17E"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
-
     project_page.wait_for_visible()
-
     project_page.click_save_project_button()
-
-    # Call immediately - no time.sleep()!
     project_page.print_save_success_message()
 
  

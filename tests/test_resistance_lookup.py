@@ -1,15 +1,15 @@
 import time
 import pytest
-from config import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR
-from pages import io_config
-from pages.dialogs import NewProjectDialog
+from config.settings import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR
+from src.pages import io_config
+from src.pages.dialogs import NewProjectDialog
 from pywinauto.keyboard import send_keys
 from pathlib import Path
 from pywinauto import Application
 import pywinauto
 import sys
 import pyperclip
-from excel_report import update_excel_result
+from src.utils.report_utils import update_excel_result
 from tests.conftest import project_page
 
 def test_2_default_row_count_for_resistance_table(main_page, project_page, io_config):
