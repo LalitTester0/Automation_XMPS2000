@@ -1,0 +1,45 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.4, pytest-9.0.2, pluggy-1.6.0
+rootdir: d:\Flairminds\XMPS_2000\Automation_XMPS2000
+configfile: pytest.ini
+plugins: check-2.7.6, html-4.2.0, metadata-3.1.1
+collected 1 item
+
+tests/test_user_defined_tags.py::test_merge_add_user_defined_tag Selecting PLC model: XM-14-DT
+Selected model: 'XM-14-DT'
+Model selection confirmed with OK
+row count 0
+[PASS] After click on cancel button row count | Expected=0 Actual=0
+[OK] Data type set to: Byte
+row count 1
+[PASS] After adding Byte, row count | Expected=1 Actual=1
+Byte
+[PASS] DataType mismatch for Byte | Expected=Byte Actual=Byte
+[OK] Data type set to: Word
+row count 2
+[PASS] After adding Word, row count | Expected=2 Actual=2
+Word
+[PASS] DataType mismatch for Word | Expected=Word Actual=Word
+[OK] Data type set to: Double Word
+row count 3
+[PASS] After adding Double Word, row count | Expected=3 Actual=3
+Double Word
+[PASS] DataType mismatch for Double Word | Expected=Double Word Actual=Double Word
+[OK] Data type set to: Int
+row count 4
+[PASS] After adding Int, row count | Expected=4 Actual=4
+Int
+[PASS] DataType mismatch for Int | Expected=Int Actual=Int
+[OK] Data type set to: Real
+row count 5
+[PASS] After adding Real, row count | Expected=5 Actual=5
+Real
+[PASS] DataType mismatch for Real | Expected=Real Actual=Real
+[OK] Data type set to: DINT
+row count 6
+[PASS] After adding DINT, row count | Expected=6 Actual=6
+DINT
+[PASS] DataType mismatch for DINT | Expected=DINT Actual=DINT
+PASSED
+
+======================== 1 passed in 132.07s (0:02:12) ========================

@@ -1,0 +1,44 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.4, pytest-9.0.2, pluggy-1.6.0
+rootdir: d:\Flairminds\XMPS_2000\Automation_XMPS2000
+configfile: pytest.ini
+plugins: check-2.7.6, html-4.2.0, metadata-3.1.1
+collected 1 item
+
+tests/test_user_defined_tags.py::test_merge_add_user_defined_tag Selecting PLC model: XM-14-DT
+Selected model: 'XM-14-DT'
+Model selection confirmed with OK
+row count 0
+[PASS] After click on cancel button row count | Expected=0 Actual=0
+
+Screenshot saved: reports/screenshots\FAIL_test_merge_add_user_defined_tag_20260312_150706.png
+FAILED
+
+================================== FAILURES ===================================
+_______________________ test_merge_add_user_defined_tag _______________________
+tests\test_user_defined_tags.py:45: in test_merge_add_user_defined_tag
+    dialog.select_datatype(datatype)
+        EXPECTED_DATATYPES = ['Byte', 'Word', 'Double Word', 'Int', 'Real', 'DINT']
+        PLC_MODEL  = 'XM-14-DT'
+        actual_rows = 0
+        datatype   = 'Byte'
+        dialog     = <src.pages.dialogs.NewProjectDialog object at 0x000002078933F140>
+        idx        = 0
+        main_page  = <src.pages.main_window.MainWindow object at 0x000002078875A630>
+        project_page = <src.pages.project_window.ProjectWindow object at 0x000002078933E750>
+        tag_name   = 'TAG_Byte_0'
+src\pages\dialogs.py:70: in select_datatype
+    print(f"\u2714 Data type set to: {value}")
+        combo      = <pywinauto.application.WindowSpecification object at 0x0000020789635010>
+        self       = <src.pages.dialogs.NewProjectDialog object at 0x000002078933F140>
+        value      = 'Byte'
+C:\Python312\Lib\encodings\cp1252.py:19: in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'charmap' codec can't encode character '\u2714' in position 0: character maps to <undefined>
+        final      = False
+        input      = '\u2714 Data type set to: Byte'
+        self       = <encodings.cp1252.IncrementalEncoder object at 0x000002078467BDD0>
+=========================== short test summary info ===========================
+FAILED tests/test_user_defined_tags.py::test_merge_add_user_defined_tag - Uni...
+============================= 1 failed in 50.07s ==============================

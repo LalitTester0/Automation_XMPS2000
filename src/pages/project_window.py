@@ -1,8 +1,8 @@
-# pages/project_window.py
+# src/pages/project_window.py
 import time
 from pywinauto import Desktop,Application
 from pywinauto.keyboard import send_keys
-from config import TIMEOUT_MED
+from config.settings import TIMEOUT_MED
 from pywinauto.timings import always_wait_until, TimeoutError
 
 
@@ -220,7 +220,7 @@ class ProjectWindow:
         assert actual == expected, f"Expected {expected} rows, got {actual}"
 
 
-    def get_row_count12(self):
+    def get_row_count(self):
         self.grid.wait("visible", timeout=TIMEOUT_MED)
         actual = self.grid.item_count()
         print("row count",actual)   
@@ -243,6 +243,39 @@ class ProjectWindow:
         value = element.get_value()
         print(value)
 
+    def get_value_of_initialValueColumn(self,rowNumber=0):
+        element = self.win.child_window(
+        title=f"InitialValue Row {rowNumber}, Not sorted.",
+        control_type="Edit"
+        ).wrapper_object()
+        value = element.get_value()
+        return value
+        
+    def get_value_of_retentiveStatusColumn(self,rowNumber=0):
+        element = self.win.child_window(
+        title=f"Retentive Row {rowNumber}",
+        control_type="CheckBox"
+        ).wrapper_object()
+        value = element.get_toggle_state() == 1
+        return value
+    
+    def get_value_of_showLogicalAddressStatusColumn(self,rowNumber=0):
+        element = self.win.child_window(
+        title=f"ShowLogicalAddress Row {rowNumber}",
+        control_type="CheckBox"
+        ).wrapper_object()
+        value = element.get_toggle_state() == 1
+        return value
+        
+    def get_value_of_retentiveAddressColumn(self,rowNumber=0):
+        element = self.win.child_window(
+        title=f"RetentiveAddress Row {rowNumber}, Not sorted.",
+        control_type="Edit"
+        ).wrapper_object()
+        value = element.get_value()
+        return value
+    
+        
     def get_multivalue_by_row_header(self, count):
         val = []
         for i in range(count):
@@ -416,7 +449,7 @@ class ProjectWindow:
             """
             cell = self.get_tag_cell(row)
             cell.double_click_input()
-            print(f"✔ Double-clicked row {row} to open edit dialog")
+            print(f"[OK] Double-clicked row {row} to open edit dialog")
             time.sleep(0.5)  # brief pause for dialog to appear
     def assert_row_tag_name(self, expected: str, row=0):
         actual = self.get_row_tag_name(row)
@@ -438,7 +471,7 @@ class ProjectWindow:
         cell.type_keys(new_tag_name, with_spaces=True)
         cell.type_keys("{ENTER}")  # commit the edit
         
-        print(f"✔ Edited tag inline to: {new_tag_name}")
+        print(f"[OK] Edited tag inline to: {new_tag_name}")
         time.sleep(0.5)  # let grid update
 
     def fill(self, tag_name, logical_addr=""):
