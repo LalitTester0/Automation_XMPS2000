@@ -7,11 +7,10 @@ from pywinauto.timings import wait_until_passes
 
 
 class NewProjectDialog:
-    """The small dialog that appears after clicking New Project."""
     def __init__(self, parent_win):
         self.parent = parent_win
         # the dialog is a child window of the main window
-        self.dlg = parent_win.child_window(title_re=".*(Add User|IO Model).*", control_type="Window")
+        self.dlg = parent_win.child_window(title_re=".*(Tags Settings|Add User|IO Model).*", control_type="Window")
         self.dlg.wait("visible", timeout=TIMEOUT_MED)
 
     @property
@@ -41,6 +40,9 @@ class NewProjectDialog:
     @property
     def error_message(self):
         return self.dlg.child_window(title="Please correct the errors before saving.",control_type="Text")
+    @property
+    def error_message2(self):
+        return self.dlg.child_window(title="Please resolve the errors first",control_type="Text")
 
 
     def clickRetentivecheckbox(self):
@@ -52,6 +54,12 @@ class NewProjectDialog:
     def getErrorMesage(self):
            self.error_message.wait("visible", timeout=5)
            actual_text = self.error_message.window_text()
+           return actual_text
+    
+    def getErrorMesage2(self):
+           self.error_message2.wait("visible", timeout=5)
+           actual_text = self.error_message2.window_text()
+           print(actual_text)
            return actual_text
     
     def select_datatype(self, value="Byte"):
@@ -71,6 +79,12 @@ class NewProjectDialog:
         cell = self.get_tag_cell(row)
         cell.double_click_input()
         time.sleep(0.5) 
+ 
+    def filltagName(self, tag_name=""):
+        self.txt_tag.set_text(tag_name)
+   
+    def filllogicalAddress(self, logical_addr):
+        self.txt_logical_address.set_text("")
 
     def fill(self, tag_name, logical_addr=""):
         self.txt_tag.set_text(tag_name)
@@ -80,8 +94,6 @@ class NewProjectDialog:
     def fillInitialValue(self,initial="0"):
         self.txt_InitialValue.set_text(initial)
       
-    def fill_update(self, tag_name):
-        self.txt_tag.set_text(tag_name)
     
     def save(self):
         self.btn_save.click_input()
