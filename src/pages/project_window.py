@@ -82,10 +82,10 @@ class ProjectWindow:
 
     @property
     def retentive_address_row0_cell(self):
-        """Returns the 'RetentiveAddress Row 0, Not sorted.' cell in the grid (read-only)"""
         return self.win.child_window(title="RetentiveAddress Row 0, Not sorted.", control_type="Edit")
-
-    
+   
+   
+   
     def click_rename_expansion(self):
         self.rename_expansion.click_input()
 
@@ -235,9 +235,9 @@ class ProjectWindow:
         print(row_count)
         return row_count
 
-    def get_corevalue_by_row_header(self,count):
+    def get_corevalue_by_row_header(self,rowNumber=0):
         element = self.win.child_window(
-        title="Tag    ˅ Row 0, Not sorted.",
+        title=f"Tag    ˅ Row {rowNumber}, Not sorted.",
         control_type="Edit"
         ).wrapper_object()
         value = element.get_value()
@@ -258,6 +258,23 @@ class ProjectWindow:
         ).wrapper_object()
         value = element.get_toggle_state() == 1
         return value
+    
+    def select_lastRowofUserDefinedTags(self,rowNumber=0):
+        element = self.win.child_window(
+        title=f"Retentive Row {rowNumber}",
+        control_type="CheckBox"
+        ).wrapper_object()
+        element.double_click_input()
+
+    def delete_UDT(self,rowNumber=0):
+        element = self.win.child_window(
+        title=f"Retentive Row {rowNumber}",
+        control_type="CheckBox"
+        ).wrapper_object()
+        element.right_click_input()
+        time.sleep(5)
+        send_keys("{DOWN}{ENTER}")  
+
     
     def get_value_of_showLogicalAddressStatusColumn(self,rowNumber=0):
         element = self.win.child_window(

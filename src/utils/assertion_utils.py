@@ -4,9 +4,6 @@ import pytest_check as check
 _verification_results = []
 
 def verify_equal(actual, expected, message):
-    """
-    Custom assertion that prints PASS/FAIL to terminal and stores result for HTML report.
-    """
     status = "PASS" if actual == expected else "FAIL"
     result = {
         "status": status,
@@ -31,3 +28,23 @@ def clear_verification_results():
     """Clears the verification results storage."""
     global _verification_results
     _verification_results = []
+
+def verify_not_equal(actual, expected, message):
+    
+    status = "PASS" if actual != expected else "FAIL"
+
+    result = {
+        "status": status,
+        "message": message,
+        "expected": f"Not {expected}",
+        "actual": actual
+    }
+    _verification_results.append(result)
+
+    if actual != expected:
+        print(f"[PASS] {message} | Expected!= {expected} Actual={actual}")
+    else:
+        print(f"[FAIL] {message} | Expected!= {expected} Actual={actual}")
+
+    # pytest-check equivalent for not equal
+    check.not_equal(actual, expected, message)
