@@ -4,6 +4,7 @@ from pywinauto.timings import always_wait_until
 from config.settings import TIMEOUT_MED
 from pywinauto import Desktop
 from pywinauto.timings import wait_until_passes
+import re
 
 
 class NewProjectDialog:
@@ -29,6 +30,9 @@ class NewProjectDialog:
     def checkbox_showLogicalAddress(self):
         return self.dlg.child_window(auto_id="ChkShowLogicalAddress", control_type="CheckBox")
     @property
+    def checkbox_autoAdd(self):
+        return self.dlg.child_window(auto_id="autoaddcheckbox", control_type="CheckBox")
+    @property
     def btn_save(self):
         return self.dlg.child_window(auto_id="btnSave", control_type="Button")
     @property
@@ -43,13 +47,28 @@ class NewProjectDialog:
     @property
     def error_message2(self):
         return self.dlg.child_window(title="Please resolve the errors first",control_type="Text")
+    @property
+    def auto_message(self):
+        return self.dlg.child_window(title="5 tags have been successfully added.",control_type="Text")
+   
+    @property
+    def txt_addtag(self):
+        return self.dlg.child_window(title="Spinner", control_type="Edit")
+    
 
-
+    def clickAutoaddcheckbox(self):
+        self.checkbox_autoAdd.click_input() 
+               
     def clickRetentivecheckbox(self):
         self.checkbox_Retentive.click_input()   
          
     def clickshowLogicalAddresscheckbox(self):
         self.checkbox_showLogicalAddress.click_input()   
+    
+    def addMultipleUDT(self,autoaddnumber="5"):
+        self.clickAutoaddcheckbox()
+        self.txt_addtag.set_edit_text(autoaddnumber)
+        
     
     def getErrorMesage(self):
            self.error_message.wait("visible", timeout=5)
@@ -62,6 +81,16 @@ class NewProjectDialog:
            print(actual_text)
            return actual_text
     
+    def get_AutoaddMsg(self,autoaddnumber=""):
+        cell = self.dlg.child_window(
+            title=f"{autoaddnumber} tags have been successfully added.",
+            control_type="Text"
+        )
+        cell.wait("visible", timeout=5)
+        actual_text = cell.window_text()
+        print(actual_text)
+        return actual_text
+    
     def select_datatype(self, value="Byte"):
         combo = self.datatype_dropdown
         combo.wait("visible enabled", timeout=10)
@@ -69,7 +98,7 @@ class NewProjectDialog:
 
     def get_tag_cell(self, row=0):
         cell = self.win.child_window(
-            title_re=rf"Tag.*Row {row}.*",
+            title_re=f"Tag.*Row {row}.*",
             control_type="Edit"
         )
         cell.wait("visible", timeout=10)
@@ -84,7 +113,7 @@ class NewProjectDialog:
         self.txt_tag.set_text(tag_name)
    
     def filllogicalAddress(self, logical_addr):
-        self.txt_logical_address.set_text("")
+        self.txt_logical_address.set_text(logical_addr)
 
     def fill(self, tag_name, logical_addr=""):
         self.txt_tag.set_text(tag_name)

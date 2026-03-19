@@ -272,7 +272,7 @@ class ProjectWindow:
         control_type="CheckBox"
         ).wrapper_object()
         element.right_click_input()
-        time.sleep(5)
+        time.sleep(1)
         send_keys("{DOWN}{ENTER}")  
 
     
