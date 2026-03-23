@@ -14,6 +14,9 @@ class ProjectWindow:
     def grid(self):
         return self.win.child_window(auto_id="grdMain", control_type="Table")
     @property
+    def select_AllTable(self):
+        return self.win.child_window(title="Top Left Header Cell", control_type="Header")
+    @property
     def user_defined_tags_node(self):
         return self.tree.child_window(title="User Defined Tags", control_type="TreeItem")
     @property
@@ -40,51 +43,40 @@ class ProjectWindow:
     @property
     def main_node(self):
         return self.tree.child_window(title="Main", control_type="TreeItem")
-    
     @property
     def save_project_button(self):
         return self.win.child_window(title="strpBtnSaveProejct", control_type="Button")
-
     @property
     def project_saved_message(self):
         return self.win.child_window(title="Project Saved Sucessfully",control_type="Text")
-    
     @property
     def status_bar(self):
         return self.win.child_window(auto_id="statusMain", control_type="StatusBar")
-
     @property
     def io_configuration_node(self):
-    
         return self.tree.child_window(title="IO Configuration", control_type="TreeItem")
-    
     @property
     def expansion_io_node(self):
         return self.tree.child_window(title="Expansion I/O", control_type="TreeItem")
-
     @property
     def add_expansion_menu(self):
         return self.win.child_window(title="DropDown", control_type="ToolBar")
-  
-
     @property
     def rename_expansionname(self):
         return self.win.child_window(title="Model Row 0, Not sorted.", control_type="Edit")
-    
     @property
     def For_UO(self):
         return self.win.child_window(title="Model Row 4, Not sorted.", control_type="Edit")
-    
     @property
     def For_AO(self):
         return self.win.child_window(title="Model Row 2, Not sorted.", control_type="Edit")
-    
-
     @property
     def retentive_address_row0_cell(self):
         return self.win.child_window(title="RetentiveAddress Row 0, Not sorted.", control_type="Edit")
    
    
+    def selectallRows(self):
+        self.select_AllTable.click_input()
    
     def click_rename_expansion(self):
         self.rename_expansion.click_input()
@@ -130,9 +122,9 @@ class ProjectWindow:
         self.modbus_tcp_client_node.right_click_input()
         time.sleep(0.5)
         send_keys("{DOWN}{ENTER}")  
-        time.sleep(2)
+        time.sleep(1)
         self.variable_dropdown.click_input()
-        time.sleep(2)
+        time.sleep(1)
     
     def __init__(self, app):
         self.app = app
@@ -213,11 +205,6 @@ class ProjectWindow:
     def open_add_user_tag_dialog(self):
         self._expand_tags()
         self.click_add_user_defined_tags()
-       
-    def assert_row_count(self, expected: int):
-        self.grid.wait("visible", timeout=TIMEOUT_MED)
-        actual = self.grid.item_count()
-        assert actual == expected, f"Expected {expected} rows, got {actual}"
 
 
     def get_row_count(self):
@@ -230,10 +217,6 @@ class ProjectWindow:
         self._expand_tags()
         self.system_tags_node.click_input()
 
-    def get_system_tags_gridrow_count(self):
-        row_count = self.grid.item_count()
-        print(row_count)
-        return row_count
 
     def get_tagName_by_row(self,rowNumber=0):
         element = self.win.child_window(
@@ -296,11 +279,10 @@ class ProjectWindow:
         return ",".join(base_addresses)
     
         
-    def get_multivalue_by_row_header(self, count):
+    def get_tagNamesUDT(self, count):
         val = []
         for i in range(count):
             dynamic_title = f"Tag    ˅ Row {i}, Not sorted."
-            print("TITLE",dynamic_title)
             element = self.win.child_window(
                     title=dynamic_title,
                     control_type="Edit"
@@ -309,6 +291,7 @@ class ProjectWindow:
             value = element.get_value()
             val.append(value)
         print(val)
+        return val
 
     def get_multivalue_expansion(self, count):
         val = []
@@ -325,25 +308,17 @@ class ProjectWindow:
             val.append(value)
         print(val)
 
-    def print_all_items_in_dropdown(self):
+    def get_tagnamesofdropdown(self):
         try:
             dropdown_list = self.win.child_window(auto_id="1000", control_type="List")
             dropdown_list.wait("visible", timeout=20)
-            
             list_wrapper = dropdown_list.wrapper_object()
             items = list_wrapper.items()
-            
-            # This is the important part
             val = []
             for item in items:
                 text = item.window_text().strip()
-                if text:                    # skip completely empty items
-                    val.append(text)
-                # else: continue            # we ignore <empty> entries
-                    
-            # Optional: show what we got
-            print("Collected items:", val)
-            
+                if text:         
+                    val.append(text)            
             return val
             
         except Exception as e:
@@ -451,6 +426,7 @@ class ProjectWindow:
         """Reads the Tag name from the grid."""
         cell = self.get_tag_cell(row)
         return cell.get_value()
+    
     def get_tag_cell(self, row=0):
             """
             Returns the Tag cell element for the given row.

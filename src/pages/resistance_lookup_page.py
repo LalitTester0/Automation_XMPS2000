@@ -24,9 +24,6 @@ class ResistanceLookupPage:
 
     @property
     def resistance_dropdown_toolbar(self):
-        """
-        Returns the 'DropDown' toolbar/button in the resistance lookup table section.
-        """
         return self.win.child_window(
             title="DropDown",
             control_type="ToolBar"

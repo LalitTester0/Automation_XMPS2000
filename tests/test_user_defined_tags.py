@@ -4,6 +4,7 @@ import pytest
 from config.settings import DEFAULT_TAG_NAME, DEFAULT_LOGICAL_ADDR, Edited_LOGICAL_ADDR, Edited_TAG_NAME, Number_TAG_NAME
 from src.pages import io_config
 from src.pages.dialogs import NewProjectDialog
+from src.pages.modbus_tcp_Client import NewModbusTCPDialog
 from pywinauto.keyboard import send_keys
 from pathlib import Path
 from pywinauto import Application
@@ -47,68 +48,83 @@ def test_merge_add_user_defined_tag(main_page, project_page):
     #     actual_datatype = project_page.get_row_datatype(row=actual_rows - 1)
     #     verify_equal(actual_datatype, datatype, f"DataType mismatch for {datatype}")
     #     dialog.cancel()
-    TEST_DATA = [
-        {
-            "tag_name": "Bool1",
-            "datatype": "Bool",
-            "initial": "1",
-            "expected_initial": 1,
-            "expected_address": "X8"
-        }
-         ]
-    for data in TEST_DATA:
-        project_page.click_add_user_defined_tags()
-        dialog = NewProjectDialog(project_page.win)
-        dialog.fill(
-            tag_name=data["tag_name"],
-            logical_addr=DEFAULT_LOGICAL_ADDR
-        )
-        dialog.select_datatype(data["datatype"])
-        dialog.fillInitialValue(initial=data["initial"])
-        dialog.clickRetentivecheckbox()
-        dialog.clickshowLogicalAddresscheckbox()
-        dialog.save()
-        dialog.cancel()
-        rownum = project_page.get_row_count() - 1
-        verify_equal(
-            int(project_page.get_value_of_initialValueColumn(rownum)),
-            data["expected_initial"],
-            f"{data['tag_name']} initial value"
-        )
-        verify_equal(
-            project_page.get_value_of_retentiveStatusColumn(rownum),
-            True,
-            f"{data['tag_name']} retentive status"
-        )
-        verify_equal(
-            project_page.get_value_of_retentiveAddressColumn(rownum),
-            data["expected_address"],
-            f"{data['tag_name']} retentive address"
-        )
-        verify_equal(
-            project_page.get_value_of_showLogicalAddressStatusColumn(rownum),
-            True,
-            f"{data['tag_name']} logical address visibility"
-        )
-        rownum=project_page.get_row_count()-1
-        updatedIntialValue="0"
-        newtagName="SecondTag"
-        project_page.select_lastRowofUserDefinedTags(rownum)
-        dialog.filltagName(newtagName)
-        dialog.fillInitialValue(initial=updatedIntialValue)
-        dialog.clickRetentivecheckbox()
-        dialog.clickshowLogicalAddresscheckbox()
-        dialog.save()
-        newupdatedInitialValue=project_page.get_value_of_initialValueColumn(rownum)
-        newupdatedTagValue =project_page.get_tagName_by_row(rownum)
-        newretentiveAddressValue=project_page.get_value_of_retentiveStatusColumn(rownum)
-        newLogicalAddressValue=project_page.get_value_of_showLogicalAddressStatusColumn(rownum)
-        verify_equal(newupdatedInitialValue,"0", "Verify that user is able to edit initial value for boolean datatype")
-        verify_equal(newupdatedTagValue,"SecondTag", "Verify that user is able to edit tag name for boolean datatype")
-        verify_equal(newretentiveAddressValue, False, "Verify that user should not  able to see rententive address in retentive address column if user edits it as uncheck.")
-        verify_equal(newLogicalAddressValue, False, "Verify that user able uncheck for show logical address if show logical address checkbox is already checked.")
-        
-        
+    # TEST_DATA = [
+    #     {
+    #         "tag_name": "Bool1",
+    #         "datatype": "Bool",
+    #         "initial": "1",
+    #         "expected_initial": 1,
+    #         "expected_address": "X8",
+    #         "Validationinitial": "2",
+            
+    #     }
+    #      ]
+    # for data in TEST_DATA:
+    #     project_page.click_add_user_defined_tags()
+    #     dialog = NewProjectDialog(project_page.win)
+    #     dialog.fill(
+    #         tag_name=data["tag_name"],
+    #         logical_addr=DEFAULT_LOGICAL_ADDR
+    #     )
+    #     dialog.select_datatype(data["datatype"])
+    #     dialog.fillInitialValue(initial=data["initial"])
+    #     dialog.clickRetentivecheckbox()
+    #     dialog.clickshowLogicalAddresscheckbox()
+    #     dialog.save()
+    #     dialog.cancel()
+    #     rownum = project_page.get_row_count() - 1
+    #     verify_equal(
+    #         int(project_page.get_value_of_initialValueColumn(rownum)),
+    #         data["expected_initial"],
+    #         f"{data['tag_name']} initial value"
+    #     )
+    #     verify_equal(
+    #         project_page.get_value_of_retentiveStatusColumn(rownum),
+    #         True,
+    #         f"{data['tag_name']} retentive status"
+    #     )
+    #     verify_equal(
+    #         project_page.get_value_of_retentiveAddressColumn(rownum),
+    #         data["expected_address"],
+    #         f"{data['tag_name']} retentive address"
+    #     )
+    #     verify_equal(
+    #         project_page.get_value_of_showLogicalAddressStatusColumn(rownum),
+    #         True,
+    #         f"{data['tag_name']} logical address visibility"
+    #     )
+    #     rownum=project_page.get_row_count()-1
+    #     updatedIntialValue="0"
+    #     newtagName="SecondTag"
+    #     project_page.select_lastRowofUserDefinedTags(rownum)
+    #     dialog.filltagName(newtagName)
+    #     dialog.fillInitialValue(initial=updatedIntialValue)
+    #     dialog.clickRetentivecheckbox()
+    #     dialog.clickshowLogicalAddresscheckbox()
+    #     dialog.save()
+    #     newupdatedInitialValue=project_page.get_value_of_initialValueColumn(rownum)
+    #     newupdatedTagValue =project_page.get_tagName_by_row(rownum)
+    #     newretentiveAddressValue=project_page.get_value_of_retentiveStatusColumn(rownum)
+    #     newLogicalAddressValue=project_page.get_value_of_showLogicalAddressStatusColumn(rownum)
+    #     verify_equal(newupdatedInitialValue,"0", "Verify that user is able to edit initial value for boolean datatype")
+    #     verify_equal(newupdatedTagValue,"SecondTag", "Verify that user is able to edit tag name for boolean datatype")
+    #     verify_equal(newretentiveAddressValue, False, "Verify that user should not  able to see rententive address in retentive address column if user edits it as uncheck.")
+    #     verify_equal(newLogicalAddressValue, False, "Verify that user able uncheck for show logical address if show logical address checkbox is already checked.")
+    #     project_page.select_lastRowofUserDefinedTags(rownum)
+    #     dialog.fillInitialValue(initial=data["Validationinitial"])
+    #     dialog.save()
+    #     Expected_Error="Please resolve the errors first"
+    #     actual_msg= dialog.getErrorMesage2()
+    #     verify_equal(actual_msg,Expected_Error,"Verify that error should be shown if user enters incorrect initial value.")
+    #     send_keys("{ENTER}")
+    #     dialog.cancel() 
+    #     rownum=project_page.get_row_count()-1
+    #     beforedeletecount=str(rownum)
+    #     project_page.delete_UDT(rownum)
+    #     time.sleep(1)
+    #     afterrownum=project_page.get_row_count()-1
+    #     afterdeletecount=str(afterrownum)
+    #     verify_not_equal(beforedeletecount,afterdeletecount,"Verify that user is able to delete added tag.")
     # test_data = [
     # ("1InvalidTag", "Verify that tag name cannot start with number."),
     # ("Invalid Tag", "Verify that tag name should not contain space."),
@@ -136,14 +152,7 @@ def test_merge_add_user_defined_tag(main_page, project_page):
     
 
 
-    # project_page.select_lastRowofUserDefinedTags(rownum)
-    # dialog.fillInitialValue(initial="2")
-    # dialog.save()
-    # Expected_Error="Please resolve the errors first"
-    # actual_msg= dialog.getErrorMesage2()
-    # verify_equal(actual_msg,Expected_Error,"Verify that error should be shown if user enters incorrect initial value.")
-    # send_keys("{ENTER}")
-    # dialog.cancel()
+    
     # project_page.click_add_user_defined_tags()
     # dialog = NewProjectDialog(project_page.win)
     # dialog.filllogicalAddress("P2:000")
@@ -153,48 +162,100 @@ def test_merge_add_user_defined_tag(main_page, project_page):
     # send_keys("{ENTER}")
     # dialog.cancel()
     # verify_equal(actual_msg,EXPECTED_ERROR,"Verify that Logical address of boolean datatype starts with F2.")
-    # rownum=project_page.get_row_count()-1
-    # beforedeletecount=str(rownum)
-    # project_page.delete_UDT(rownum)
-    # time.sleep(5)
-    # afterrownum=project_page.get_row_count()-1
-    # afterdeletecount=str(afterrownum)
-    # verify_not_equal(beforedeletecount,afterdeletecount,"Verify that user is able to delete added tag.")
-    # before=project_page.get_row_count()
-    # project_page.click_add_user_defined_tags()
-    # dialog = NewProjectDialog(project_page.win)
-    # dialog.filltagName("Bool1")
-    # autoaddnumber="6"
-    # expected_Msg=autoaddnumber +" tags have been successfully added."
-    # dialog.addMultipleUDT(autoaddnumber)
-    # dialog.save()
-    # time.sleep(1) 
-    # actualmsg=dialog.get_AutoaddMsg(autoaddnumber)
-    # send_keys("{ENTER}")
-    # dialog.cancel
-    # after=project_page.get_row_count()
-    # verify_equal(expected_Msg, actualmsg, "Verify that user is able to auto add tag of boolean datatype.")
-    # verify_not_equal(before,after,"Verify that user is able to auto add tag of boolean datatype.")
-    
+    TAG_NAMES = ["BoolTag","ByteTag","WordTag","DWordTag","IntTag","RealTag","DintTag"]
+    for datatype,tag_name in zip(EXPECTED_DATATYPES, TAG_NAMES):
+        before = project_page.get_row_count()
+        project_page.click_add_user_defined_tags()
+        dialog = NewProjectDialog(project_page.win)
+        dialog.filltagName(tag_name) 
+        dialog.select_datatype(datatype)
+        autoaddnumber = "6"
+        expected_Msg = autoaddnumber + " tags have been successfully added."
+        dialog.addMultipleUDT(autoaddnumber)
+        dialog.save()
+        time.sleep(5)
+        actualmsg = dialog.get_AutoaddMsg(autoaddnumber)
+        send_keys("{ENTER}")
+        dialog.cancel()
+        after = project_page.get_row_count()
+        verify_equal(
+            actualmsg,
+            expected_Msg,
+            f"{datatype} auto add message validation"
+        )
+        verify_not_equal(
+            before,
+            after,
+            f"{datatype} auto add row count validation"
+        )
 
 def test_edit_user_defined_tag_name(main_page, project_page):
-    """Test editing tag name by double-clicking the grid row."""
     PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
-    
+    time.sleep(1)
     project_page.open_add_user_tag_dialog()
-    before=project_page.get_row_count()
     dialog = NewProjectDialog(project_page.win)
-    dialog.filltagName("Bool1")
-    autoaddnumber="6"
-    dialog.addMultipleUDT(autoaddnumber)
-    dialog.save()
-    time.sleep(1) 
-    actualmsg=dialog.get_AutoaddMsg(autoaddnumber)
-    send_keys("{ENTER}")
-    dialog.cancel
-    after=project_page.get_row_count()
-    print("before count is " + str(before) + " *** and after count is " + str(after))
-    
-   
+    dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
+    dialog.cancel()   
+    # TEST_DATA = [
+    # {"datatype": "Bool", "logical":"F2:000","tag": "BoolTag", "add_count": 1025, "msg_count": 1024},
+    # {"datatype": "Byte","logical":"W4:000", "tag": "ByteTag", "add_count": 1025, "msg_count": 1024},
+    # {"datatype": "Word", "logical":"W4:000","tag": "WordTag", "add_count": 1025, "msg_count": 1024},
+    # {"datatype": "Double Word","logical":"W4:000", "tag": "DWordTag", "add_count": 513, "msg_count": 512},
+    # {"datatype": "Int", "logical":"W4:000","tag": "IntTag", "add_count": 1025, "msg_count": 1024},
+    # {"datatype": "Real", "logical":"P5:000","tag": "RealTag", "add_count": 257, "msg_count": 256},
+    # {"datatype": "DINT", "logical":"W4:000","tag": "DintTag", "add_count": 1025, "msg_count": 1024}
+    #     ]
+    # for data in enumerate(TEST_DATA):
+    #     before = project_page.get_row_count()
+    #     project_page.click_add_user_defined_tags()
+    #     dialog = NewProjectDialog(project_page.win)
+    #     dialog.select_datatype(data["datatype"])
+    #     dialog.filltagName(data["tag"])
+    #     dialog.filllogicalAddress(data["logical"])
+    #     add_count = data["add_count"]
+    #     msg_count = data["msg_count"]
+    #     expected_Msg = f"{msg_count} tags have been successfully added."
+    #     dialog.addMultipleUDT(add_count)
+    #     dialog.save()
+    #     actualmsg = dialog.get_AutoaddMsg(msg_count)
+    #     send_keys("{ENTER}")
+    #     dialog.cancel()
+    #     after = project_page.get_row_count()
+    #     verify_equal(
+    #         actualmsg,
+    #         expected_Msg,
+    #         f"{data['datatype']} add:{add_count} msg:{msg_count}"
+    #     )
+    #     verify_not_equal(
+    #         before,
+    #         after,
+    #         f"{data['datatype']} row count change"
+    #     )
+    #     project_page.selectallRows()   
+    #     send_keys("{DELETE}")
+#     project_page.click_add_user_defined_tags()
+#     dialog = NewProjectDialog(project_page.win)
+#     dialog.select_datatype("Bool")
+#     dialog.filltagName("bool1")
+#    # dialog.filllogicalAddress(data["logical"])
+#     add_count = 10
+#     dialog.addMultipleUDT(add_count)
+#     dialog.save()
+#     send_keys("{ENTER}")
+#     dialog.cancel()
+#     rowcount = project_page.get_row_count()
+#     udt_tagnames=project_page.get_tagNamesUDT(rowcount)
+    project_page.click_modbus_tcp_client()
+    modbus = NewModbusTCPDialog(project_page.win)
+    tcp_clienttagNames=modbus.get_tagnamesofdropdown()
+    # missing_tags = [tag for tag in udt_tagnames if tag not in tcp_clienttagNames]
+    # verify_equal(
+    #     missing_tags,
+    #     [],
+    #     f"Missing tags from dropdown: {missing_tags}"
+    # )
+          
+        
+
