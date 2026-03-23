@@ -235,13 +235,13 @@ class ProjectWindow:
         print(row_count)
         return row_count
 
-    def get_corevalue_by_row_header(self,rowNumber=0):
+    def get_tagName_by_row(self,rowNumber=0):
         element = self.win.child_window(
         title=f"Tag    ˅ Row {rowNumber}, Not sorted.",
         control_type="Edit"
         ).wrapper_object()
         value = element.get_value()
-        print(value)
+        return value
 
     def get_value_of_initialValueColumn(self,rowNumber=0):
         element = self.win.child_window(
@@ -290,7 +290,10 @@ class ProjectWindow:
         control_type="Edit"
         ).wrapper_object()
         value = element.get_value()
-        return value
+        parts = value.split(",")
+        
+        base_addresses = [p.split(":")[0] for p in parts]
+        return ",".join(base_addresses)
     
         
     def get_multivalue_by_row_header(self, count):
