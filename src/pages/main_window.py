@@ -37,7 +37,9 @@ class MainWindow:
     def btn_ok(self):
         return self.win.child_window(auto_id="btnOK", control_type="Button")
     
-    
+    @property
+    def ddl_productseries(self):
+        return self.win.child_window(auto_id="ddlProductSeries", control_type="ComboBox")
     # ------------------------------------------------------------------
     # Actions
     # ------------------------------------------------------------------
@@ -46,6 +48,16 @@ class MainWindow:
 
     def click_open_project(self):
         self.btn_open_project.click_input()
+
+    def select_product_series(self, series_name):
+        dropdown = self.ddl_productseries
+        dropdown.wait("visible", timeout=15)
+        dropdown.expand()
+        list_box = dropdown.child_window(control_type="List")
+        list_box.wait("visible", timeout=10)
+        series_item = list_box.child_window(title=series_name, control_type="ListItem")
+        series_item.wait("visible", timeout=1)
+        series_item.click_input()
 
     def select_model_and_confirm(self, model_name):
         dropdown = self.ddl_model

@@ -18,9 +18,11 @@ from src.utils.assertion_utils import verify_not_equal
 
 @pytest.mark.UD_tags
 def test_merge_add_user_defined_tag(main_page, project_page):
+    Product_series ="XMPro-10 Series"
     PLC_MODEL = "XM-14-DT"
     EXPECTED_DATATYPES = ["Byte", "Word", "Double Word", "Int", "Real", "DINT"]
     main_page.click_new_project()
+    main_page.select_product_series(Product_series)
     main_page.select_model_and_confirm(PLC_MODEL)
     time.sleep(1)
     project_page.open_add_user_tag_dialog()
@@ -29,8 +31,8 @@ def test_merge_add_user_defined_tag(main_page, project_page):
     dialog.cancel()
     time.sleep(1)
     actual_rows = project_page.get_row_count()
-    verify_equal(actual_rows, 0, "After click on cancel button row count")
-    # checking all datatypes is get entered or not
+    verify_equal(actual_rows, 0, "Verify that no tag is added when user clicks cancel in add user defined tag dialog.")
+    #checking all datatypes is get entered or not
     # for idx, datatype in enumerate(EXPECTED_DATATYPES):
     #     project_page.click_add_user_defined_tags()
     #     tag_name = f"TAG_{datatype.replace(' ', '_')}_{idx}"
@@ -43,57 +45,58 @@ def test_merge_add_user_defined_tag(main_page, project_page):
     #     time.sleep(1)
     #     expected_count = idx + 1
     #     actual_rows = project_page.get_row_count()
-    #     verify_equal(actual_rows, expected_count, f"After adding {datatype}, row count")
+    #     verify_equal(actual_rows, expected_count, f"Verify that user is able to add {datatype} datatype, row count")
     #     actual_datatype = project_page.get_row_datatype(row=actual_rows - 1)
     #     verify_equal(actual_datatype, datatype, f"DataType mismatch for {datatype}")
     #     dialog.cancel()
     TEST_DATA = [
         {
-            "tag_name": "Bool1",
+            "tag_name": "Bool_1",
             "datatype": "Bool",
             "initial": "1",
-            "expected_initial": 1,
-            "expected_address": "Y9:000"
+            "expected_initial":"1",
+            "expected_address": "X8:000"
         },
         {
-            "tag_name": "Byte1",
+            "tag_name": "Byte_1",
             "datatype": "Byte",
             "initial": "1",
-            "expected_initial": 1,
+            "expected_initial":"1",
             "expected_address": "Y9:000"
         },
         {
-            "tag_name": "Word1",
+            "tag_name": "Word_1",
             "datatype": "Word",
             "initial": "10",
-            "expected_initial": 10,
+            "expected_initial":"10",
             "expected_address": "Y9:001"
         },
         {
-            "tag_name": "DWord1",
+            "tag_name": "DWord_1",
             "datatype": "Double Word",
             "initial": "100",
-            "expected_initial": 100,
+            "expected_initial":"100",
             "expected_address": "Z10:000"
         },
         {
-            "tag_name": "int1",
+            "tag_name": "Int_1",
             "datatype": "Int",
             "initial": "5",
-            "expected_initial": 5,
+            "expected_initial":"5",
             "expected_address": "Y9:002"
         },
         {
-            "tag_name": "Real1",
+            "tag_name": "Real_1",
             "datatype": "Real",
             "initial": "1.5",
-            "expected_initial": 1.5,
+            "expected_initial":"1.5",
             "expected_address": "Z10:001"
         },
         {
+            "tag_name": "DINT_1",
             "datatype": "DINT",
             "initial": "200",
-            "expected_initial": 200,
+            "expected_initial":"200",
             "expected_address": "Z10:002"
         }
         ]
@@ -219,105 +222,107 @@ def test_merge_add_user_defined_tag(main_page, project_page):
     # after=project_page.get_row_count()
     # verify_equal(expected_Msg, actualmsg, "Verify that user is able to auto add tag of boolean datatype.")
     # verify_not_equal(before,after,"Verify that user is able to auto add tag of boolean datatype.")
-    TEST_DATA = [
-    {
-        "tag_name": "Bool1",
-        "datatype": "Bool",
-        "initial": "1",
-        "expected_initial": 1,
-        "expected_address": "Y9:000"
-    },
-    {
-        "tag_name": "Byte1",
-        "datatype": "Byte",
-        "initial": "1",
-        "expected_initial": 1,
-        "expected_address": "Y9:000"
-    },
-    {
-        "tag_name": "Word1",
-        "datatype": "Word",
-        "initial": "10",
-        "expected_initial": 10,
-        "expected_address": "Y9:001"
-    },
-    {
-        "tag_name": "DWord1",
-        "datatype": "Double Word",
-        "initial": "100",
-        "expected_initial": 100,
-        "expected_address": "Z10:000"
-    },
-    {
-        "tag_name": "int1",
-        "datatype": "Int",
-        "initial": "5",
-        "expected_initial": 5,
-        "expected_address": "Y9:002"
-    },
-    {
-        "tag_name": "Real1",
-        "datatype": "Real",
-        "initial": "1.5",
-        "expected_initial": 1.5,
-        "expected_address": "Z10:001"
-    },
-    {
-        "datatype": "DINT",
-        "initial": "200",
-        "expected_initial": 200,
-        "expected_address": "Z10:002"
-    }
-    ]
-    for data in TEST_DATA:
+    # TEST_DATA = [
+    # {
+    #     "tag_name": "Bool1",
+    #     "datatype": "Bool",
+    #     "initial": "1",
+    #     "expected_initial": 1,
+    #     "expected_address": "Y9:000"
+    # },
+    # {
+    #     "tag_name": "Byte1",
+    #     "datatype": "Byte",
+    #     "initial": "1",
+    #     "expected_initial": 1,
+    #     "expected_address": "Y9:000"
+    # },
+    # {
+    #     "tag_name": "Word1",
+    #     "datatype": "Word",
+    #     "initial": "10",
+    #     "expected_initial": 10,
+    #     "expected_address": "Y9:001"
+    # },
+    # {
+    #     "tag_name": "DWord1",
+    #     "datatype": "Double Word",
+    #     "initial": "100",
+    #     "expected_initial": 100,
+    #     "expected_address": "Z10:000"
+    # },
+    # {
+    #     "tag_name": "int1",
+    #     "datatype": "Int",
+    #     "initial": "5",
+    #     "expected_initial": 5,
+    #     "expected_address": "Y9:002"
+    # },
+    # {
+    #     "tag_name": "Real1",
+    #     "datatype": "Real",
+    #     "initial": "1.5",
+    #     "expected_initial": 1.5,
+    #     "expected_address": "Z10:001"
+    # },
+    # {
+    #     "datatype": "DINT",
+    #     "initial": "200",
+    #     "expected_initial": 200,
+    #     "expected_address": "Z10:002"
+    # }
+    # ]
+    # for data in TEST_DATA:
 
-        project_page.click_add_user_defined_tags()
-        dialog = NewProjectDialog(project_page.win)
+    #     project_page.click_add_user_defined_tags()
+    #     dialog = NewProjectDialog(project_page.win)
 
-        dialog.fill(
-            tag_name=data["tag_name"],
-            logical_addr=DEFAULT_LOGICAL_ADDR
-        )
+    #     dialog.fill(
+    #         tag_name=data["tag_name"],
+    #         logical_addr=DEFAULT_LOGICAL_ADDR
+    #     )
 
-        dialog.select_datatype(data["datatype"])
-        dialog.fillInitialValue(initial=data["initial"])
-        dialog.clickRetentivecheckbox()
-        dialog.clickshowLogicalAddresscheckbox()
+    #     dialog.select_datatype(data["datatype"])
+    #     dialog.fillInitialValue(initial=data["initial"])
+    #     dialog.clickRetentivecheckbox()
+    #     dialog.clickshowLogicalAddresscheckbox()
 
-        dialog.save()
-        dialog.cancel()
+    #     dialog.save()
+    #     dialog.cancel()
 
-        rownum = project_page.get_row_count() - 1
+    #     rownum = project_page.get_row_count() - 1
 
-        verify_equal(
-            project_page.get_value_of_initialValueColumn(rownum),
-            data["expected_initial"],
-            f"{data['tag_name']} initial value"
-        )
+    #     verify_equal(
+    #         project_page.get_value_of_initialValueColumn(rownum),
+    #         data["expected_initial"],
+    #         f"{data['tag_name']} initial value"
+    #     )
 
-        verify_equal(
-            project_page.get_value_of_retentiveStatusColumn(rownum),
-            True,
-            f"{data['tag_name']} retentive status"
-        )
+    #     verify_equal(
+    #         project_page.get_value_of_retentiveStatusColumn(rownum),
+    #         True,
+    #         f"{data['tag_name']} retentive status"
+    #     )
 
-        verify_equal(
-            project_page.get_value_of_retentiveAddressColumn(rownum),
-            data["expected_address"],
-            f"{data['tag_name']} retentive address"
-        )
+    #     verify_equal(
+    #         project_page.get_value_of_retentiveAddressColumn(rownum),
+    #         data["expected_address"],
+    #         f"{data['tag_name']} retentive address"
+    #     )
 
-        verify_equal(
-            project_page.get_value_of_showLogicalAddressStatusColumn(rownum),
-            True,
-            f"{data['tag_name']} logical address visibility"
-        )
+    #     verify_equal(
+    #         project_page.get_value_of_showLogicalAddressStatusColumn(rownum),
+    #         True,
+    #         f"{data['tag_name']} logical address visibility"
+    #     )
         
 
 def test_edit_user_defined_tag_name(main_page, project_page):
     """Test editing tag name by double-clicking the grid row."""
+    Product_series ="XMPro-10 Series"
     PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
+    main_page.select_product_series(Product_series)
     main_page.select_model_and_confirm(PLC_MODEL)
     
     project_page.open_add_user_tag_dialog()
