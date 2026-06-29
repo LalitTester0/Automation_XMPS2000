@@ -2,6 +2,8 @@ import logging
 import pytest
 import os
 import sys
+import faulthandler
+faulthandler.disable()
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pyautogui
 from datetime import datetime
@@ -229,8 +231,9 @@ def pytest_sessionfinish(session, exitstatus):
             sheet = workbook.Sheets(1)
             sheet.Name = "Execution_Report"
 
-        # Clear existing content if any (or just append)
-        # sheet.Cells.ClearContents() 
+       # Clear existing content if any (or just append)
+        sheet.Cells.ClearContents() 
+        sheet.Cells.ClearFormats()
 
         # Write Headers
         headers = ["Status", "Verification Message", "Test Case"]

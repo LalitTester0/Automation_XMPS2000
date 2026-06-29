@@ -13,10 +13,13 @@ from src.utils.report_utils import update_excel_result
 from tests.conftest import project_page
 
 def test_2_default_row_count_for_resistance_table(main_page, project_page, io_config):
-
+    
+    Product_series ="XBLDPro-10 Series"
     PLC_MODEL = "XBLD-14E"
 
+
     main_page.click_new_project()
+    main_page.select_product_series(Product_series)
     main_page.select_model_and_confirm(PLC_MODEL)
 
     project_page.click_ioconfig()
