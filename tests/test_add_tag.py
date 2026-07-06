@@ -22,12 +22,10 @@ def test_add_user_defined_tag(main_page, project_page):
     PLC_MODEL = "XM-14-DT"
     main_page.click_new_project()
     main_page.select_model_and_confirm(PLC_MODEL)
-    time.sleep(2) 
     project_page.open_add_user_tag_dialog()
     dialog = NewProjectDialog(project_page.win)
     dialog.fill(tag_name=DEFAULT_TAG_NAME, logical_addr=DEFAULT_LOGICAL_ADDR)
     dialog.save()
-    time.sleep(1)
     project_page.assert_row_count(expected=1)
     dialog.cancel()
 
@@ -1946,7 +1944,6 @@ def test_add_resistance_value(main_page, project_page, io_config):
 
     # Select "Add Resistance Values" via keyboard
     io_config.select_add_resistance_values_from_context_menu()
-
     io_config.enter_resistance_and_output_values(RESISTANCE, OUTPUT)
     io_config.click_save_resistance_value()
 

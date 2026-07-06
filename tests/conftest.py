@@ -26,29 +26,34 @@ import win32com.client
 global_excel_verifications = []
 
 # ==================== SCREENSHOT ON FAILURE + SCENARIO ====================
- 
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """Capture screenshot on failure and docstring as scenario."""
     outcome = yield
     rep = outcome.get_result()
- 
-    # Capture scenario from test docstring
+
+    # Capture scenario from test function docstring
     if item.function.__doc__:
         rep.scenario = item.function.__doc__.strip()
     else:
         rep.scenario = "No scenario description provided"
- 
-    # Screenshot only on failure in call phase
+
+    # Take screenshot only on failure during the call phase (actual test execution)
     if rep.when == "call" and rep.failed:
         screenshot_dir = "reports/screenshots"
         os.makedirs(screenshot_dir, exist_ok=True)
- 
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        safe_name = item.name.replace(" ", "_").replace("[", "_").replace("]", "_") \
-                                .replace("/", "_").replace("\\", "_").replace(":", "_")
+        safe_name = (
+            item.name.replace(" ", "_")
+            .replace("[", "_").replace("]", "_")
+            .replace("/", "_").replace("\\", "_")
+            .replace(":", "_").replace("|", "_").replace("*", "_")
+            .replace("?", "_").replace('"', "_").replace("<", "_").replace(">", "_")
+        )
         screenshot_path = os.path.join(screenshot_dir, f"FAIL_{safe_name}_{timestamp}.png")
- 
+
         try:
             pyautogui.screenshot(screenshot_path)
             print(f"\nScreenshot saved: {screenshot_path}")
@@ -72,18 +77,6 @@ def pytest_runtest_makereport(item, call):
 # ==================== CUSTOM COLUMN ORDER ====================
  
 def pytest_html_results_table_header(cells):
-    """
-    Default columns in pytest-html are:
-    0: Result
-    1: Test
-    2: Duration
-    3: Links
- 
-    We insert our custom columns in the desired positions:
-    → After Test (index 2): Scenario
-    → After Duration (index 4 after insert): Screenshot
-    """
-    # Insert Scenario after "Test" column (becomes position 2)
     cells.insert(2, "<th class='sortable'>Scenario</th>")
     
     # Insert Verifications after "Scenario" (becomes position 3)
@@ -94,11 +87,9 @@ def pytest_html_results_table_header(cells):
  
  
 def pytest_html_results_table_row(report, cells):
-    """Insert values in the same order as headers."""
- 
-    # Insert Scenario after "Test" (position 2)
+    # Scenario column
     scenario = getattr(report, "scenario", "No scenario")
-    scenario_display = scenario.replace("\n", "<br>")  # Support multi-line
+    scenario_display = scenario.replace("\n", "<br>")
     cells.insert(2, f"<td class='col-scenario'>{scenario_display}</td>")
  
     # Insert Verifications after "Scenario" (position 3)
@@ -127,8 +118,8 @@ def pytest_html_results_table_row(report, cells):
             shutil.copy2(path, dest_path)
  
             img_html = f"""
-            <img src="{dest_path}" alt="Failure screenshot"
-                 width="600" style="max-width:100%; height:auto; cursor:zoom-in;"
+            <img src="{relative_path}" alt="Failure screenshot"
+                 style="max-width:100%; height:auto; cursor:zoom-in; border:1px solid #ddd; border-radius:4px;"
                  onclick="window.open(this.src, '_blank')">
             """
             cells.insert(4, f"<td class='col-screenshot'>{img_html}</td>")
@@ -136,16 +127,15 @@ def pytest_html_results_table_row(report, cells):
             cells.insert(4, "<td>No screenshot</td>")
     else:
         cells.insert(4, "<td>-</td>")
- 
- 
-# ==================== STYLING & TITLE ====================
- 
+
+
+# ==================== REPORT TITLE & STYLING ====================
+
 def pytest_html_report_title(report):
     report.title = "XMPS 2000 Automation Test Report"
- 
- 
+
+
 def pytest_configure(config):
-    """Add custom CSS for better readability."""
     if hasattr(config, "_html"):
         config._html.extra_css.append(
             "data:text/css,"
@@ -163,29 +153,32 @@ def clear_verifications():
  
 @pytest.fixture
 def app():
+    """Launch the XMPS application once per session and close it at the end."""
     app = Application(backend="uia").start(EXE_PATH)
     yield app
     try:
         app.kill()
-    except:
-        pass
- 
- 
-@pytest.fixture
+    except Exception:
+        pass  # Ignore if already closed or crashed
+
+
+@pytest.fixture(scope="function")
 def main_page(app):
+    """Return MainWindow page object. Assumes app is already running."""
     main_win = MainWindow(app)
     main_win.wait_for_visible()
     return main_win
- 
- 
-@pytest.fixture
+
+
+@pytest.fixture(scope="function")
 def project_page(app, main_page):
-    main_page.wait_for_visible()
+    """Return ProjectWindow. Depends on main_page to ensure flow."""
     project_win = ProjectWindow(app)
     project_win.wait_for_visible()
     return project_win
 
-@pytest.fixture
+
+@pytest.fixture(scope="function")
 def io_config(project_page):
     return IOConfig(project_page.win)
 

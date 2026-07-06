@@ -2,6 +2,7 @@
 # Python standard ignores
 # --------------------------
 __pycache__/
+tests/__pycache__
 *.pyc
 *.pyo
 *.pyd

@@ -7,7 +7,7 @@ from pathlib import Path
 EXE_PATH = r"C:\Program Files (x86)\Messung Systems\XMPS2000_Setup\XMPS2000_1.100.exe"
 
 # Default values for the “Add User Defined Tag” dialog
-DEFAULT_TAG_NAME      = "YourTagValue"
+DEFAULT_TAG_NAME      = "Test_Tag"
 DEFAULT_LOGICAL_ADDR  = ""          # leave empty or set a value
 
 Edited_TAG_NAME      = "Under_score"
